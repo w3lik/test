@@ -256,10 +256,6 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             if (_align) then
                 csPointer:relation(_align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, drx, ry)
             end
-            local tt = self:tooltips()
-            if (type(tt) == "function") then
-                self:tooltips()(under, drx, ry + 0.024)
-            end
         end,
         ---@param evtData noteOnMouseEventMoveData
         leftClick = function(data, evtData)
