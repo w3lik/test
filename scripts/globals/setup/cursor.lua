@@ -115,17 +115,14 @@ cs:setQuote(ABILITY_TARGET_TYPE.tag_unit, {
             end)
         end
     end,
-    leftClick = function(evtData)
-        ---@type Ability
-        local ab = obj:prop("ability")
-        if (isClass(ab, AbilityClass) == false) then
-            mouse.onLeftClick("LIK_CursorAbilityLeftClick", nil)
-            return
-        end
-        local tt = ab:targetType()
-        if (tt == ABILITY_TARGET_TYPE.tag_unit) then
+    refresh = function(data)
+
+    end,
+    leftClick = function(data, evtData)
+        local ab = data.ability
+        if (true == checkAbility(ab)) then
             ---@type Unit
-            local targetUnit = obj:prop("curAimClosest")
+            local targetUnit = Cursor():prop("curAimClosest")
             if (isClass(targetUnit, UnitClass)) then
                 if (ab:isCastTarget(targetUnit) == false) then
                     evtData.triggerPlayer:alert(colour.hex(colour.gold, "目标不允许"))
@@ -133,35 +130,6 @@ cs:setQuote(ABILITY_TARGET_TYPE.tag_unit, {
                     sync.send("G_GAME_SYNC", { "ability_effective_u", ab:id(), targetUnit:id() })
                 end
             end
-        elseif (tt == ABILITY_TARGET_TYPE.tag_loc or
-                tt == ABILITY_TARGET_TYPE.tag_circle or
-                tt == ABILITY_TARGET_TYPE.tag_square) then
-            if (true ~= obj:isSafe()) then
-                return
-            end
-            local cond = {
-                x = japi.GetMouseTerrainX(),
-                y = japi.GetMouseTerrainY(),
-            }
-            if (tt == ABILITY_TARGET_TYPE.tag_circle) then
-                cond.radius = obj:prop("curSize") or ab:castRadius()
-                cond.units = obj:prop("curUnits")
-            elseif (tt == ABILITY_TARGET_TYPE.tag_square) then
-                local cs = obj:prop("curSize")
-                if (cs) then
-                    cond.height = obj:prop("curSize") or ab:castHeight()
-                    cond.width = ab:castWidth() / ab:castHeight() * cond.height
-                else
-                    cond.height = ab:castHeight()
-                    cond.width = ab:castWidth()
-                end
-                cond.units = obj:prop("curUnits")
-            end
-            if (ab:isBanCursor(cond)) then
-                PlayerLocal():alert(colour.hex(colour.red, "无效目标"))
-                return
-            end
-            sync.send("G_GAME_SYNC", { "ability_effective_xyz", ab:id(), cond.x, cond.y, japi.GetMouseTerrainZ() })
         end
     end,
 })
