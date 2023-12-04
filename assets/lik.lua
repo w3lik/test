@@ -1,0 +1,37 @@
+_assets_model("eff/Crit", "lik_crit")
+_assets_model("eff/CritAbility", "lik_crit_ability")
+
+_assets_model("ttg/Avoid", "lik_ttg_avoid")
+_assets_model("ttg/ImmuneDamage", "lik_ttg_immune_damage")
+_assets_model("ttg/ImmuneEnchant", "lik_ttg_immune_enchant")
+_assets_model("ttg/ImmuneInvincible", "lik_ttg_immune_invincible")
+_assets_model("ttg/EnchantDark", "lik_ttg_e_dark")
+_assets_model("ttg/EnchantFire", "lik_ttg_e_fire")
+_assets_model("ttg/EnchantGrass", "lik_ttg_e_grass")
+_assets_model("ttg/EnchantIce", "lik_ttg_e_ice")
+_assets_model("ttg/EnchantLight", "lik_ttg_e_light")
+_assets_model("ttg/EnchantPoison", "lik_ttg_e_poison")
+_assets_model("ttg/EnchantRock", "lik_ttg_e_rock")
+_assets_model("ttg/EnchantThunder", "lik_ttg_e_thunder")
+_assets_model("ttg/EnchantWater", "lik_ttg_e_water")
+_assets_model("ttg/EnchantWind", "lik_ttg_e_wind")
+_assets_model("ttg/EnchantSteel", "lik_ttg_e_steel")
+_assets_model("ttg/CritAbilityOrange", "lik_ttg_crit")
+
+_assets_model("ttg/WordOrange+", "lik_word_+")
+_assets_model("ttg/WordOrange-", "lik_word_-")
+_assets_model("ttg/WordOrange0", "lik_word_0")
+_assets_model("ttg/WordOrange1", "lik_word_1")
+_assets_model("ttg/WordOrange2", "lik_word_2")
+_assets_model("ttg/WordOrange3", "lik_word_3")
+_assets_model("ttg/WordOrange4", "lik_word_4")
+_assets_model("ttg/WordOrange5", "lik_word_5")
+_assets_model("ttg/WordOrange6", "lik_word_6")
+_assets_model("ttg/WordOrange7", "lik_word_7")
+_assets_model("ttg/WordOrange8", "lik_word_8")
+_assets_model("ttg/WordOrange9", "lik_word_9")
+_assets_model("ttg/WordOrangeCrit1", "lik_word_crit")
+
+_assets_model("interface/BossAlert") -- 指示器[条]100*750
+_assets_model("interface/BossAlertRing") -- 指示器[圆]160
+_assets_model("interface/BossAlertSquare") -- 指示器[正方]160
