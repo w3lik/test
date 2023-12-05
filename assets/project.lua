@@ -13,4 +13,3 @@ _assets_ui("lik_menu")
 _assets_ui("lik_plate")
 _assets_ui("lik_buff")
 _assets_ui("lik_debug")
-_assets_ui("lik_cursor") --指针置顶
