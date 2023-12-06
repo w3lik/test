@@ -79,6 +79,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
     -- 【square方形选区】一般准备2个贴图：友军、敌军（常见：白、红）当为nil时采用魔兽原生建造贴图
     local csTexture = {
         pointer = {
+            alpha = 255,
             width = 0,
             height = 0,
             normal = nil,
@@ -86,9 +87,9 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             enemy = nil,
         },
         drag = {
+            alpha = 255,
             width = 0.04,
             height = 0.04,
-            alpha = 255,
             normal = "Framework\\ui\\cursorDrag.tga"
         },
         aim = {
@@ -96,8 +97,8 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             width = 0.035,
             height = 0.035,
             normal = "Framework\\ui\\cursorAimWhite.tga",
-            positive = "Framework\\ui\\cursorAimGreen.tga",
-            negative = "Framework\\ui\\cursorAimRed.tga",
+            ally = "Framework\\ui\\cursorAimGreen.tga",
+            enemy = "Framework\\ui\\cursorAimRed.tga",
             neutral = "Framework\\ui\\cursorAimGold.tga",
         },
         square = {
@@ -108,15 +109,11 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
     }
 
     -- 设定一些值供临时使用
-    local _int1, _bool1, _timer1
+    local _int1, _bool1, _timer1, _unit1
 
     ---@param ab Ability
     ---@return boolean
-    local abilityStart = function(ab)
-        if (isClass(_timer1, TimerClass)) then
-            destroy(_timer1)
-            _timer1 = nil
-        end
+    local abilityCheck = function(ab)
         if (isClass(ab, AbilityClass)) then
             return false
         end
@@ -137,11 +134,20 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             p:alert(colour.hex(colour.gold, "施法中"))
             return false
         end
+        return true
+    end
+    ---@param ab Ability
+    ---@return boolean
+    local abilityStart = function(ab)
+        if (isClass(_timer1, TimerClass)) then
+            destroy(_timer1)
+            _timer1 = nil
+        end
         J.EnableSelect(false, false)
         time.setTimeout(0, function()
             J.SelectUnit(selection:handle(), true)
         end)
-        return true
+        return abilityCheck(ab)
     end
     local abilityOver = function()
         _timer1 = time.setTimeout(1, function()
@@ -226,7 +232,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
     cs:setQuote(ABILITY_TARGET_TYPE.tag_nil, {
         start = function(data)
             local ab = data.ability
-            if (true == abilityStart(ab)) then
+            if (true == abilityCheck(ab)) then
                 audio(Vcm("war3_MouseClick1"))
                 sync.send("G_GAME_SYNC", { "ability_effective", ab:id() })
             end
@@ -245,6 +251,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                     return false
                 end
             end
+            _unit1 = nil
             return true
         end,
         over = function()
@@ -253,8 +260,10 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         ---@param evtData noteOnMouseEventMoveData
         refresh = function(data, evtData)
             local p, rx, ry = evtData.triggerPlayer, evtData.rx, evtData.ry
-            local conf = self:texture()
-            local drx = japi.FrameDisAdaptive(rx)
+            if (rx < 0.004 or rx > 0.796 or ry < 0.004 or ry >= 0.596) then
+                csPointer:alpha(0)
+                return
+            end
             ---@type Ability
             local ab = data.ability
             if (isClass(ab, AbilityClass) == false) then
@@ -265,57 +274,19 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                 cs:quoteClear()
                 return
             end
-            local hasPointer = (nil ~= csTexture.pointer.normal)
+            local align = FRAME_ALIGN_CENTER
+            local alpha = csTexture.aim.alpha
+            local texture = csTexture.aim.normal
+            local width = csTexture.aim.width
+            local height = csTexture.aim.height
             ---@type Unit|Item
             local under = h2o(japi.GetUnitUnderMouse())
-            local _texture, _alpha, _width, _height, _align
-            local _isFlashing = false
-            if (false == inClass(under, UnitClass, ItemClass)) then
-                under = nil
-            else
-                if (false == under:isAlive()) then
-                    under = nil
-                elseif (hasPointer) then
-                    if (under:isEnemy(p)) then
-                        _texture = csTexture.pointer.enemy
-                        _isFlashing = true
-                    else
-                        _texture = csTexture.pointer.ally
-                    end
-                end
-            end
             local bu = ab:bindUnit()
             local isBan = bu:isInterrupt() or bu:isPause() or bu:isAbilityChantCasting() or bu:isAbilityKeepCasting()
-            _alpha = csTexture.aim.alpha
-            _texture = csTexture.aim.normal
-            _width = csTexture.aim.width
-            _height = csTexture.aim.height
-            _align = FRAME_ALIGN_CENTER
             if (isBan) then
-                _alpha = math.ceil(_alpha / 2)
+                alpha = math.ceil(alpha / 2)
             end
-            if (rx < 0.004 or rx > 0.796 or ry < 0.004 or ry >= 0.596) then
-                _alpha = 0
-                _isFlashing = false
-            else
-                if (hasPointer) then
-                    _width = csTexture.pointer.width
-                    _height = csTexture.pointer.height
-                    local adx = 0.8 - japi.FrameAdaptive(csTexture.pointer.width)
-                    local rmp = 1
-                    if (rx > adx) then
-                        local rxp = (csTexture.pointer.width - (rx - adx)) / csTexture.pointer.width
-                        rmp = math.min(rmp, rxp)
-                    end
-                    if (ry < csTexture.pointer.height) then
-                        local ryp = (csTexture.pointer.height - (csTexture.pointer.height - ry)) / csTexture.pointer.height
-                        rmp = math.min(rmp, ryp)
-                    end
-                    _width = _width * rmp
-                    _height = _height * rmp
-                end
-            end
-            local curAimClosest = self:prop("curAimClosest")
+            local curAimClosest = _unit1
             if (isClass(curAimClosest, UnitClass) and curAimClosest ~= under) then
                 J.SetUnitVertexColor(curAimClosest:handle(), table.unpack(curAimClosest:rgba()))
             end
@@ -326,65 +297,32 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                 if (under:owner():isNeutral()) then
                     green = 230
                     blue = 0
-                    _texture = conf.aim.neutral
+                    texture = csTexture.aim.neutral
                 elseif (under:isEnemy(p)) then
                     green = 0
                     blue = 0
-                    _texture = conf.aim.negative
+                    texture = csTexture.aim.enemy
                 elseif (under:isAlly(p)) then
                     red = 127
                     blue = 0
-                    _texture = conf.aim.positive
+                    texture = csTexture.aim.ally
                 end
                 if ((red ~= 255 or green ~= 255 or blue ~= 255)) then
                     J.SetUnitVertexColor(under:handle(), red, green, blue, under:rgba()[4] or 255)
                 end
-                self:prop("curAimClosest", under)
+                _unit1 = under
             end
-            -- 修改处理
-            if (_texture == nil) then
-                _texture = "Framework\\ui\\nil.tga"
-            end
-            csPointer:texture(_texture)
-            local csfi = 10
-            local half = math.ceil((_alpha or 255) / 3)
-            local csf = self:prop("csFlashing") or 0
-            if (_isFlashing) then
-                local cst = self:prop("csFlashTo") or false
-                if (cst ~= true) then
-                    csf = csf + csfi
-                    if (csf >= 0) then
-                        csf = 0
-                        self:prop("csFlashTo", true)
-                    end
-                else
-                    csf = csf - csfi
-                    if (csf < -half) then
-                        csf = -half
-                        self:prop("csFlashTo", false)
-                    end
-                end
-                self:prop("csFlashing", csf)
-            else
-                self:clear("csFlashing")
-                self:clear("csFlashTo")
-            end
-            if (_alpha) then
-                csPointer:alpha(_alpha + csf)
-            end
-            if (_width and _height) then
-                csPointer:size(_width, _height)
-            end
-            if (_align) then
-                csPointer:relation(_align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, drx, ry)
-            end
+            csPointer:texture(texture)
+            csPointer:alpha(alpha)
+            csPointer:size(width, height)
+            csPointer:relation(align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
         end,
         ---@param evtData noteOnMouseEventMoveData
         leftClick = function(data, evtData)
             local ab = data.ability
-            if (true == abilityStart(ab)) then
+            if (true == abilityCheck(ab)) then
                 ---@type Unit
-                local targetUnit = Cursor():prop("curAimClosest")
+                local targetUnit = _unit1
                 if (isClass(targetUnit, UnitClass)) then
                     if (ab:isCastTarget(targetUnit) == false) then
                         evtData.triggerPlayer:alert(colour.hex(colour.gold, "目标不允许"))
