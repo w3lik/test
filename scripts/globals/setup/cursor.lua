@@ -66,7 +66,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
     -- 指针配置
     local cs = Cursor()
     local csPointer = FrameBackdrop("myPointer", FrameGameUI):adaptive(true):size(0.01, 0.01)
-    local csArea1 = Image("Framework\\ui\\nil.tga", 16, 16):show(false)
+    local csArea = Image("Framework\\ui\\nil.tga", 16, 16):show(false)
     local csFollow = FrameBackdrop("myFollow", FrameGameUI):show(false)
     -- 区域贴图尺寸变化量，方形时以高为1做比例替换，小于等于0即瞬间变化完成
     local csSizeRate = 0
@@ -107,9 +107,16 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         },
     }
 
+    -- 设定一些值供临时使用
+    local _int1, _bool1, _timer1
+
     ---@param ab Ability
     ---@return boolean
-    local alertAbility = function(ab)
+    local abilityStart = function(ab)
+        if (isClass(_timer1, TimerClass)) then
+            destroy(_timer1)
+            _timer1 = nil
+        end
         if (isClass(ab, AbilityClass)) then
             return false
         end
@@ -130,17 +137,24 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             p:alert(colour.hex(colour.gold, "施法中"))
             return false
         end
+        J.EnableSelect(false, false)
+        time.setTimeout(0, function()
+            J.SelectUnit(selection:handle(), true)
+        end)
         return true
     end
-
-    -- 设定一些临时值供后面引用
-    local _fleshInt, _fleshBool
+    local abilityOver = function()
+        _timer1 = time.setTimeout(1, function()
+            J.EnableSelect(true, false)
+        end)
+        cs:quote("pointer") -- 切回默认指针
+    end
 
     -- 自定义默认指针逻辑
     cs:setQuote("pointer", {
         start = function()
-            _fleshInt = 0
-            _fleshBool = false
+            _int1 = 0
+            _bool1 = false
         end,
         refresh = function(_, evtData)
             local p, rx, ry = evtData.triggerPlayer, evtData.rx, evtData.ry
@@ -179,30 +193,30 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                 end
             end
 
-            local csfi = 10
+            local ci = 10
             local half = math.ceil((alpha or 255) / 3)
-            local csf = _fleshInt
+            local cn = _int1
             if (isFleshing) then
-                if (_fleshBool ~= true) then
-                    csf = csf + csfi
-                    if (csf >= 0) then
-                        csf = 0
-                        _fleshBool = true
+                if (_bool1 ~= true) then
+                    cn = cn + ci
+                    if (cn >= 0) then
+                        cn = 0
+                        _bool1 = true
                     end
                 else
-                    csf = csf - csfi
-                    if (csf < -half) then
-                        csf = -half
-                        _fleshBool = false
+                    cn = cn - ci
+                    if (cn < -half) then
+                        cn = -half
+                        _bool1 = false
                     end
                 end
-                _fleshInt = csf
+                _int1 = cn
             else
-                _fleshInt = 0
-                _fleshBool = false
+                _int1 = 0
+                _bool1 = false
             end
             csPointer:texture(texture)
-            csPointer:alpha(alpha + csf)
+            csPointer:alpha(alpha + cn)
             csPointer:size(width, height)
             csPointer:relation(align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, drx, ry)
         end
@@ -212,31 +226,29 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
     cs:setQuote(ABILITY_TARGET_TYPE.tag_nil, {
         start = function(data)
             local ab = data.ability
-            if (true == alertAbility(ab)) then
+            if (true == abilityStart(ab)) then
                 audio(Vcm("war3_MouseClick1"))
                 sync.send("G_GAME_SYNC", { "ability_effective", ab:id() })
             end
+            return false
         end,
     })
 
     cs:setQuote(ABILITY_TARGET_TYPE.tag_unit, {
         start = function(data)
             local ab = data.ability
-            if (true == alertAbility(ab)) then
+            if (true == abilityStart(ab)) then
                 audio(Vcm("war3_MouseClick1"))
                 local u = ab:bindUnit()
                 if (ab:isCastTarget(u)) then
                     sync.send("G_GAME_SYNC", { "ability_effective_u", ab:id(), ab:bindUnit():id() })
-                    return
+                    return false
                 end
-                J.EnableSelect(false, false)
-                time.setTimeout(0, function()
-                    J.SelectUnit(selection:handle(), true)
-                end)
             end
+            return true
         end,
         over = function()
-
+            abilityOver()
         end,
         ---@param evtData noteOnMouseEventMoveData
         refresh = function(data, evtData)
@@ -370,7 +382,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         ---@param evtData noteOnMouseEventMoveData
         leftClick = function(data, evtData)
             local ab = data.ability
-            if (true == alertAbility(ab)) then
+            if (true == abilityStart(ab)) then
                 ---@type Unit
                 local targetUnit = Cursor():prop("curAimClosest")
                 if (isClass(targetUnit, UnitClass)) then
