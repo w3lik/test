@@ -260,6 +260,9 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         over = function()
             abilityOver()
+            if (isClass(_unit1, UnitClass)) then
+                J.SetUnitVertexColor(_unit1:handle(), table.unpack(_unit1:rgba()))
+            end
             _unitU = nil
         end,
         ---@param evtData noteOnMouseEventMoveData
@@ -275,7 +278,9 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                 cs:quoteClear()
                 return
             end
-            if (ab:isProhibiting() or ab:coolDownRemain() > 0 or isClass(ab:bindUnit(), UnitClass) == false) then
+            ---@type Unit
+            local bu = ab:bindUnit()
+            if (ab:isProhibiting() or ab:coolDownRemain() > 0 or isClass(bu, UnitClass) == false) then
                 cs:quoteClear()
                 return
             end
@@ -286,7 +291,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             local height = csTexture.aim.height
             ---@type Unit|Item
             local under = h2o(japi.GetUnitUnderMouse())
-            local bu = ab:bindUnit()
+            ---@type Unit
             local isBan = bu:isInterrupt() or bu:isPause() or bu:isAbilityChantCasting() or bu:isAbilityKeepCasting()
             if (isBan) then
                 alpha = math.ceil(alpha / 2)
@@ -325,17 +330,76 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         ---@param evtData noteOnMouseEventMoveData
         leftClick = function(data, evtData)
             local ab = data.ability
-            if (true == abilityCheck(ab)) then
-                ---@type Unit
-                local targetUnit = _unit1
-                if (isClass(targetUnit, UnitClass)) then
-                    if (ab:isCastTarget(targetUnit) == false) then
-                        evtData.triggerPlayer:alert(colour.hex(colour.gold, "目标不允许"))
-                    else
-                        sync.send("G_GAME_SYNC", { "ability_effective_u", ab:id(), targetUnit:id() })
-                    end
+            ---@type Unit
+            local targetUnit = _unit1
+            if (isClass(targetUnit, UnitClass)) then
+                if (ab:isCastTarget(targetUnit) == false) then
+                    evtData.triggerPlayer:alert(colour.hex(colour.gold, "目标不允许"))
+                else
+                    sync.send("G_GAME_SYNC", { "ability_effective_u", ab:id(), targetUnit:id() })
                 end
             end
+        end,
+    })
+
+    cs:setQuote(ABILITY_TARGET_TYPE.tag_loc, {
+        start = function(data)
+            local ab = data.ability
+            if (true == abilityStart(ab)) then
+                audio(Vcm("war3_MouseClick1"))
+            end
+        end,
+        over = function()
+            abilityOver()
+        end,
+        ---@param evtData noteOnMouseEventMoveData
+        refresh = function(data, evtData)
+            local rx, ry = evtData.triggerPlayer, evtData.rx, evtData.ry
+            if (rx < 0.004 or rx > 0.796 or ry < 0.004 or ry >= 0.596) then
+                csPointer:alpha(0)
+                return
+            end
+            ---@type Ability
+            local ab = data.ability
+            if (isClass(ab, AbilityClass) == false) then
+                cs:quoteClear()
+                return
+            end
+            ---@type Unit
+            local bu = ab:bindUnit()
+            if (ab:isProhibiting() or ab:coolDownRemain() > 0 or isClass(bu, UnitClass) == false) then
+                cs:quoteClear()
+                return
+            end
+            local align = FRAME_ALIGN_CENTER
+            local alpha = csTexture.aim.alpha
+            local texture = csTexture.aim.normal
+            local width = csTexture.aim.width
+            local height = csTexture.aim.height
+            local isBan = bu:isInterrupt() or bu:isPause() or bu:isAbilityChantCasting() or bu:isAbilityKeepCasting()
+            if (isBan) then
+                alpha = math.ceil(alpha / 2)
+            end
+            csPointer:texture(texture)
+            csPointer:alpha(alpha)
+            csPointer:size(width, height)
+            csPointer:relation(align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
+        end,
+        ---@param evtData noteOnMouseEventMoveData
+        leftClick = function(data, evtData)
+            local ab = data.ability
+            if (true ~= mouse.isSafety()) then
+                return
+            end
+            local cond = {
+                x = japi.GetMouseTerrainX(),
+                y = japi.GetMouseTerrainY(),
+            }
+            if (ab:isBanCursor(cond)) then
+                evtData.triggerPlayer:alert(colour.hex(colour.red, "无效目标"))
+                return
+            end
+            sync.send("G_GAME_SYNC", { "ability_effective_xyz", ab:id(), cond.x, cond.y, japi.GetMouseTerrainZ() })
         end,
     })
 
