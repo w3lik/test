@@ -109,7 +109,8 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
     }
 
     -- 设定一些值供临时使用
-    local _int1, _bool1, _timer1, _unit1
+    local _int1, _bool1, _timer1
+    local _unitU, _unit1
 
     ---@param ab Ability
     ---@return boolean
@@ -245,17 +246,21 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             local ab = data.ability
             if (true == abilityStart(ab)) then
                 audio(Vcm("war3_MouseClick1"))
+                -- 双击对己释放
                 local u = ab:bindUnit()
                 if (ab:isCastTarget(u)) then
-                    sync.send("G_GAME_SYNC", { "ability_effective_u", ab:id(), ab:bindUnit():id() })
-                    return false
+                    if (_unitU == u) then
+                        _unitU = nil
+                        sync.send("G_GAME_SYNC", { "ability_effective_u", ab:id(), u:id() })
+                        return false
+                    end
                 end
             end
             _unit1 = nil
-            return true
         end,
         over = function()
             abilityOver()
+            _unitU = nil
         end,
         ---@param evtData noteOnMouseEventMoveData
         refresh = function(data, evtData)
@@ -286,9 +291,9 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             if (isBan) then
                 alpha = math.ceil(alpha / 2)
             end
-            local curAimClosest = _unit1
-            if (isClass(curAimClosest, UnitClass) and curAimClosest ~= under) then
-                J.SetUnitVertexColor(curAimClosest:handle(), table.unpack(curAimClosest:rgba()))
+            local closest = _unit1
+            if (isClass(closest, UnitClass) and closest ~= under) then
+                J.SetUnitVertexColor(closest:handle(), table.unpack(closest:rgba()))
             end
             if (isClass(under, UnitClass)) then
                 local red = 255
