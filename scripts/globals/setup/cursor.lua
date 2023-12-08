@@ -101,10 +101,13 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             enemy = "Framework\\ui\\cursorAimRed.tga",
             neutral = "Framework\\ui\\cursorAimGold.tga",
         },
+        circle = {
+
+        },
         square = {
             alpha = 150,
-            positive = TEAM_COLOR_BLP_LIGHT_BLUE,
-            negative = TEAM_COLOR_BLP_RED,
+            enable = TEAM_COLOR_BLP_LIGHT_BLUE,
+            disable = TEAM_COLOR_BLP_RED,
         },
     }
 
@@ -267,11 +270,6 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         ---@param evtData noteOnMouseEventMoveData
         refresh = function(data, evtData)
-            local p, rx, ry = evtData.triggerPlayer, evtData.rx, evtData.ry
-            if (rx < 0.004 or rx > 0.796 or ry < 0.004 or ry >= 0.596) then
-                csPointer:alpha(0)
-                return
-            end
             ---@type Ability
             local ab = data.ability
             if (isClass(ab, AbilityClass) == false) then
@@ -282,6 +280,11 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             local bu = ab:bindUnit()
             if (ab:isProhibiting() or ab:coolDownRemain() > 0 or isClass(bu, UnitClass) == false) then
                 cs:quoteClear()
+                return
+            end
+            local p, rx, ry = evtData.triggerPlayer, evtData.rx, evtData.ry
+            if (rx < 0.004 or rx > 0.796 or ry < 0.004 or ry >= 0.596) then
+                csPointer:alpha(0)
                 return
             end
             local align = FRAME_ALIGN_CENTER
@@ -354,11 +357,6 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         ---@param evtData noteOnMouseEventMoveData
         refresh = function(data, evtData)
-            local rx, ry = evtData.triggerPlayer, evtData.rx, evtData.ry
-            if (rx < 0.004 or rx > 0.796 or ry < 0.004 or ry >= 0.596) then
-                csPointer:alpha(0)
-                return
-            end
             ---@type Ability
             local ab = data.ability
             if (isClass(ab, AbilityClass) == false) then
@@ -369,6 +367,11 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             local bu = ab:bindUnit()
             if (ab:isProhibiting() or ab:coolDownRemain() > 0 or isClass(bu, UnitClass) == false) then
                 cs:quoteClear()
+                return
+            end
+            local rx, ry = evtData.rx, evtData.ry
+            if (rx < 0.004 or rx > 0.796 or ry < 0.004 or ry >= 0.596) then
+                csPointer:alpha(0)
                 return
             end
             local align = FRAME_ALIGN_CENTER
@@ -397,6 +400,153 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             }
             if (ab:isBanCursor(cond)) then
                 evtData.triggerPlayer:alert(colour.hex(colour.red, "无效目标"))
+                return
+            end
+            sync.send("G_GAME_SYNC", { "ability_effective_xyz", ab:id(), cond.x, cond.y, japi.GetMouseTerrainZ() })
+        end,
+    })
+
+    cs:setQuote(ABILITY_TARGET_TYPE.tag_circle, {
+        start = function(data)
+            local ab = data.ability
+            if (true == abilityStart(ab)) then
+                audio(Vcm("war3_MouseClick1"))
+            end
+            _int1 = -1
+            _unit1 = nil
+        end,
+        over = function()
+            abilityOver()
+            if (type(_unit1) == "table") then
+                for _, u in ipairs(_unit1) do
+                    J.SetUnitVertexColor(u:handle(), table.unpack(u:rgba()))
+                end
+            end
+            _unit1 = nil
+        end,
+        ---@param evtData noteOnMouseEventMoveData
+        refresh = function(data, evtData)
+            ---@type Ability
+            local ab = data.ability
+            if (isClass(ab, AbilityClass) == false) then
+                cs:quoteClear()
+                return
+            end
+            ---@type Unit
+            local bu = ab:bindUnit()
+            if (ab:isProhibiting() or ab:coolDownRemain() > 0 or isClass(bu, UnitClass) == false) then
+                cs:quoteClear()
+                return
+            end
+            local p, rx, ry = evtData.triggerPlayer, evtData.rx, evtData.ry
+            if (true ~= mouse.isSafety(rx, ry)) then
+                csArea:show(false)
+                return
+            end
+            local castRadius = ab:castRadius()
+            local circleParams = csTexture.circle
+            if (circleParams == nil) then
+                local skin = p:skin()
+                if (skin ~= RACE_HUMAN_NAME and skin ~= RACE_ORC_NAME and skin ~= RACE_NIGHTELF_NAME and skin ~= RACE_UNDEAD_NAME) then
+                    skin = p:race()
+                end
+                if (RACE_SELECTION_SPELL_AREA_OF_EFFECT[skin]) then
+                    circleParams = {
+                        alpha = 255,
+                        enable = RACE_SELECTION_SPELL_AREA_OF_EFFECT[skin],
+                        disable = nil,
+                    }
+                else
+                    circleParams = {
+                        alpha = 255,
+                        enable = "ReplaceableTextures\\Selection\\SpellAreaOfEffect.blp",
+                        disable = nil,
+                    }
+                end
+            end
+            local curSize = _int1
+            if (csSizeRate <= 0 or curSize == castRadius) then
+                curSize = castRadius
+            elseif (curSize < castRadius) then
+                curSize = math.min(castRadius, curSize + csSizeRate)
+            elseif (curSize > castRadius) then
+                curSize = math.max(castRadius, curSize - csSizeRate)
+            end
+            _int1 = curSize
+            local tx = japi.GetMouseTerrainX()
+            local ty = japi.GetMouseTerrainY()
+            local prevUnit = _unit1
+            local newUnits = Group():catch(UnitClass, {
+                limit = 30,
+                circle = {
+                    x = tx,
+                    y = ty,
+                    radius = castRadius,
+                },
+                ---@param enumUnit Unit
+                filter = function(enumUnit)
+                    return ab:isCastTarget(enumUnit)
+                end
+            })
+            local renderAllow = {}
+            for _, u in ipairs(newUnits) do
+                renderAllow[u:id()] = true
+            end
+            if (type(prevUnit) == "table") then
+                for _, u in ipairs(prevUnit) do
+                    if (renderAllow[u:id()] == nil) then
+                        J.SetUnitVertexColor(u:handle(), table.unpack(u:rgba()))
+                    end
+                end
+            end
+            local texture
+            if (ab:isBanCursor({ x = tx, y = ty, radius = curSize, units = newUnits })) then
+                texture = circleParams.disable or circleParams.enable
+            else
+                texture = circleParams.enable
+            end
+            _unit1 = newUnits
+            if (#newUnits > 0) then
+                for _, ru in ipairs(newUnits) do
+                    local red = 255
+                    local green = 255
+                    local blue = 255
+                    if (ru:owner():isNeutral()) then
+                        green = 230
+                        blue = 0
+                    elseif (ru:isEnemy(p)) then
+                        green = 0
+                        blue = 0
+                    elseif (ru:isAlly(p)) then
+                        red = 127
+                        blue = 0
+                    end
+                    if ((red ~= 255 or green ~= 255 or blue ~= 255)) then
+                        J.SetUnitVertexColor(ru:handle(), red, green, blue, ru:rgba()[4] or 255)
+                    end
+                end
+                newUnits = nil
+            end
+            csArea:rgba(255, 255, 255, circleParams.alpha)
+            csArea:texture(texture)
+            csArea:size(curSize * 2, curSize * 2)
+            csArea:position(tx, ty)
+            csArea:show(true)
+        end,
+        ---@param evtData noteOnMouseEventMoveData
+        leftClick = function(data, evtData)
+            local ab = data.ability
+            if (true ~= mouse.isSafety()) then
+                return
+            end
+            local cond = {
+                x = japi.GetMouseTerrainX(),
+                y = japi.GetMouseTerrainY(),
+                radius = obj:prop("curSize") or ab:castRadius(),
+                units = _unit1,
+            }
+            if (ab:isBanCursor(cond)) then
+                evtData.triggerPlayer:alert(colour.hex(colour.red, "无效范围"))
                 return
             end
             sync.send("G_GAME_SYNC", { "ability_effective_xyz", ab:id(), cond.x, cond.y, japi.GetMouseTerrainZ() })
