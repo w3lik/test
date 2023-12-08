@@ -239,6 +239,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             if (true == abilityCheck(ab)) then
                 audio(Vcm("war3_MouseClick1"))
                 sync.send("G_GAME_SYNC", { "ability_effective", ab:id() })
+                cs:quoteClear()
             end
             return false
         end,
@@ -340,6 +341,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                     evtData.triggerPlayer:alert(colour.hex(colour.gold, "目标不允许"))
                 else
                     sync.send("G_GAME_SYNC", { "ability_effective_u", ab:id(), targetUnit:id() })
+                    cs:quoteClear()
                 end
             end
         end,
@@ -403,6 +405,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                 return
             end
             sync.send("G_GAME_SYNC", { "ability_effective_xyz", ab:id(), cond.x, cond.y, japi.GetMouseTerrainZ() })
+            cs:quoteClear()
         end,
     })
 
@@ -550,6 +553,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                 return
             end
             sync.send("G_GAME_SYNC", { "ability_effective_xyz", ab:id(), cond.x, cond.y, japi.GetMouseTerrainZ() })
+            cs:quoteClear()
         end,
     })
 
