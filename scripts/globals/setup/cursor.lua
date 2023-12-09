@@ -545,9 +545,155 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             local cond = {
                 x = japi.GetMouseTerrainX(),
                 y = japi.GetMouseTerrainY(),
-                radius = obj:prop("curSize") or ab:castRadius(),
+                radius = _int1 or ab:castRadius(),
                 units = _unit1,
             }
+            if (ab:isBanCursor(cond)) then
+                evtData.triggerPlayer:alert(colour.hex(colour.red, "无效范围"))
+                return
+            end
+            sync.send("G_GAME_SYNC", { "ability_effective_xyz", ab:id(), cond.x, cond.y, japi.GetMouseTerrainZ() })
+            cs:quoteClear()
+        end,
+    })
+
+    cs:setQuote(ABILITY_TARGET_TYPE.tag_square, {
+        start = function(data)
+            local ab = data.ability
+            if (true == abilityStart(ab)) then
+                audio(Vcm("war3_MouseClick1"))
+            end
+            _int1 = -1
+            _unit1 = nil
+        end,
+        over = function()
+            abilityOver()
+            if (type(_unit1) == "table") then
+                for _, u in ipairs(_unit1) do
+                    J.SetUnitVertexColor(u:handle(), table.unpack(u:rgba()))
+                end
+            end
+            _unit1 = nil
+        end,
+        ---@param evtData noteOnMouseEventMoveData
+        refresh = function(data, evtData)
+            ---@type Ability
+            local ab = data.ability
+            if (isClass(ab, AbilityClass) == false) then
+                cs:quoteClear()
+                return
+            end
+            ---@type Unit
+            local bu = ab:bindUnit()
+            if (ab:isProhibiting() or ab:coolDownRemain() > 0 or isClass(bu, UnitClass) == false) then
+                cs:quoteClear()
+                return
+            end
+            local p, rx, ry = evtData.triggerPlayer, evtData.rx, evtData.ry
+            if (true ~= mouse.isSafety(rx, ry)) then
+                csArea:show(false)
+                return
+            end
+            local castWidth = ab:castWidth()
+            local castHeight = ab:castHeight()
+            local sizeRate = csSizeRate
+            local w_h = castWidth / castHeight
+            local curWidth = 0
+            local curHeight = _int1
+            if (sizeRate <= 0 or curHeight == nil or curHeight == castHeight) then
+                curHeight = castHeight
+                curWidth = castWidth
+            elseif (curHeight < castHeight) then
+                curHeight = math.min(castHeight, curHeight + sizeRate)
+                curWidth = w_h * curHeight
+            elseif (curHeight > castHeight) then
+                curHeight = math.max(castHeight, curHeight - sizeRate)
+                curWidth = w_h * curHeight
+            end
+            _int1 = curHeight
+            local tx = japi.GetMouseTerrainX()
+            local ty = japi.GetMouseTerrainY()
+            local prevUnit = _unit1
+            local newUnits = Group():catch(UnitClass, {
+                limit = 30,
+                square = {
+                    x = tx,
+                    y = ty,
+                    width = curWidth,
+                    height = curHeight,
+                },
+                ---@param enumUnit Unit
+                filter = function(enumUnit)
+                    return ab:isCastTarget(enumUnit)
+                end
+            })
+            local renderAllow = {}
+            for _, u in ipairs(newUnits) do
+                renderAllow[u:id()] = true
+            end
+            if (type(prevUnit) == "table") then
+                for _, u in ipairs(prevUnit) do
+                    if (renderAllow[u:id()] == nil) then
+                        J.SetUnitVertexColor(u:handle(), table.unpack(u:rgba()))
+                    end
+                end
+            end
+            local texture
+            if (ab:isBanCursor({ x = tx, y = ty, width = curWidth, height = curHeight, units = newUnits })) then
+                texture = csTexture.square.disable or csTexture.square.enable
+            else
+                texture = csTexture.square.enable
+            end
+            _unit1 = newUnits
+            if (#newUnits > 0) then
+                for _, ru in ipairs(newUnits) do
+                    local red = 255
+                    local green = 255
+                    local blue = 255
+                    if (ru:owner():isNeutral()) then
+                        green = 230
+                        blue = 0
+                    elseif (ru:isEnemy(p)) then
+                        green = 0
+                        blue = 0
+                        if (csTexture.square.disable) then
+                            texture = csTexture.square.disable
+                        end
+                    elseif (ru:isAlly(p)) then
+                        red = 127
+                        blue = 0
+                    end
+                    if ((red ~= 255 or green ~= 255 or blue ~= 255)) then
+                        J.SetUnitVertexColor(ru:handle(), red, green, blue, ru:rgba()[4] or 255)
+                    end
+                end
+                newUnits = nil
+            end
+            csArea:rgba(255, 255, 255, csTexture.square.alpha)
+            csArea:texture(texture)
+            csArea:size(curWidth, curHeight)
+            csArea:position(tx, ty)
+            csArea:show(true)
+        end,
+        ---@param evtData noteOnMouseEventMoveData
+        leftClick = function(data, evtData)
+            local ab = data.ability
+            if (true ~= mouse.isSafety()) then
+                return
+            end
+            local cond = {
+                x = japi.GetMouseTerrainX(),
+                y = japi.GetMouseTerrainY(),
+                units = _unit1,
+            }
+            local curSize = _int1
+            if (curSize) then
+                cond.height = curSize or ab:castHeight()
+                cond.width = ab:castWidth() / ab:castHeight() * cond.height
+            else
+                cond.height = ab:castHeight()
+                cond.width = ab:castWidth()
+            end
             if (ab:isBanCursor(cond)) then
                 evtData.triggerPlayer:alert(colour.hex(colour.red, "无效范围"))
                 return
