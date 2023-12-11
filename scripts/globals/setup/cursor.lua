@@ -65,9 +65,9 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
 
     -- 指针配置
     local cs = Cursor()
+    local csFollow = FrameBackdrop("myFollow", FrameGameUI):show(false) -- 跟踪比指针底层所以先定义
     local csPointer = FrameBackdrop("myPointer", FrameGameUI):adaptive(true):size(0.01, 0.01)
     local csArea = Image("Framework\\ui\\nil.tga", 16, 16):show(false)
-    local csFollow = FrameBackdrop("myFollow", FrameGameUI):show(false)
     -- 区域贴图尺寸变化量，方形时以高为1做比例替换，小于等于0即瞬间变化完成
     local csSizeRate = 0
     -- 配置各种指针贴图【Framework已准备一些基本图】
@@ -700,6 +700,15 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             end
             sync.send("G_GAME_SYNC", { "ability_effective_xyz", ab:id(), cond.x, cond.y, japi.GetMouseTerrainZ() })
             cs:quoteClear()
+        end,
+    })
+
+    cs:setQuote("drag", {
+        start = function(data)
+        end,
+    })
+    cs:setQuote("followFrame", {
+        start = function(data)
         end,
     })
 
