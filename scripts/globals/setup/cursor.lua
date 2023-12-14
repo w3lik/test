@@ -740,7 +740,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             y = math.min(y, 0.6 - a[4] / 2 - pad[1])
             japi.FrameClearAllPoints(frame:handle())
             japi.FrameSetPoint(frame:handle(), FRAME_ALIGN_CENTER, FrameGameUI:handle(), FRAME_ALIGN_LEFT_BOTTOM, x, y)
-            frame:setDragXY(x, y)
+            frame:setReleasePoint(x, y)
         end,
     })
     cs:setQuote("followFrame", {
