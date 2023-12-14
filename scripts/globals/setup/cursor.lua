@@ -1,5 +1,5 @@
 Game():onEvent(EVENT.Game.Start, "myCursor", function()
-
+    
     -- 自定义选择圈
     J.EnableSelect(true, false)
     local sel = Image("ReplaceableTextures\\Selection\\SelectionCircleLarge.blp", 72, 72)
@@ -54,15 +54,15 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                     end
                 end
                 FrameTooltips(0)
-                        :relation(FRAME_ALIGN_BOTTOM, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, tx, ty)
-                        :content({ tips = table.concat(tips, '|n') })
-                        :show(true)
+                    :relation(FRAME_ALIGN_BOTTOM, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, tx, ty)
+                    :content({ tips = table.concat(tips, '|n') })
+                    :show(true)
             else
                 FrameTooltips(0):show(false)
             end
         end
     end)
-
+    
     -- 指针配置
     local cs = Cursor()
     local csFollow = FrameBackdrop("myFollow", FrameGameUI):show(false) -- 跟踪比指针底层所以先定义
@@ -102,7 +102,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             neutral = "Framework\\ui\\cursorAimGold.tga",
         },
         circle = {
-
+        
         },
         square = {
             alpha = 150,
@@ -110,11 +110,12 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             disable = TEAM_COLOR_BLP_RED,
         },
     }
-
+    
     -- 设定一些值供临时使用
     local _int1, _bool1, _timer1
+    local _float1, _float2
     local _unitU, _unit1
-
+    
     ---@param ab Ability
     ---@return boolean
     local abilityCheck = function(ab)
@@ -157,11 +158,10 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         _timer1 = time.setTimeout(1, function()
             J.EnableSelect(true, false)
         end)
-        cs:quote("pointer") -- 切回默认指针
     end
-
+    
     -- 自定义默认指针逻辑
-    cs:setQuote("pointer", {
+    cs:setDefault({
         start = function()
             _int1 = 0
             _bool1 = false
@@ -202,7 +202,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                     texture = csTexture.pointer.ally
                 end
             end
-
+            
             local ci = 10
             local half = math.ceil((alpha or 255) / 3)
             local cn = _int1
@@ -231,8 +231,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             csPointer:relation(align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, drx, ry)
         end
     })
-    cs:quote("pointer") -- 默认指针默认启动
-
+    
     cs:setQuote(ABILITY_TARGET_TYPE.tag_nil, {
         start = function(data)
             local ab = data.ability
@@ -244,7 +243,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             return false
         end,
     })
-
+    
     cs:setQuote(ABILITY_TARGET_TYPE.tag_unit, {
         start = function(data)
             local ab = data.ability
@@ -346,7 +345,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             end
         end,
     })
-
+    
     cs:setQuote(ABILITY_TARGET_TYPE.tag_loc, {
         start = function(data)
             local ab = data.ability
@@ -408,7 +407,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             cs:quoteClear()
         end,
     })
-
+    
     cs:setQuote(ABILITY_TARGET_TYPE.tag_circle, {
         start = function(data)
             local ab = data.ability
@@ -556,7 +555,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             cs:quoteClear()
         end,
     })
-
+    
     cs:setQuote(ABILITY_TARGET_TYPE.tag_square, {
         start = function(data)
             local ab = data.ability
@@ -702,14 +701,64 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             cs:quoteClear()
         end,
     })
-
+    
     cs:setQuote("drag", {
         start = function(data)
+            local alpha = csTexture.drag.alpha
+            local texture = csTexture.drag.normal
+            local width = csTexture.drag.width
+            local height = csTexture.drag.height
+            csPointer:texture(texture)
+            csPointer:alpha(alpha)
+            csPointer:size(width, height)
+            ---@type FrameDrag
+            local frame = data.frame
+            local a = frame:anchor()
+            local rx, ry = japi.MouseRX(), japi.MouseRY()
+            _float1 = rx - a[1]
+            _float2 = ry - a[2]
+        end,
+        over = function()
+            abilityOver()
+            _float1 = nil
+            _float2 = nil
+        end,
+        ---@param evtData noteOnMouseEventMoveData
+        refresh = function(data, evtData)
+            local rx, ry = evtData.rx, evtData.ry
+            local align = FRAME_ALIGN_CENTER
+            csPointer:relation(align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
+            ---@type FrameDrag
+            local frame = data.frame
+            local a = frame:anchor()
+            local x = rx - _float1
+            local y = ry - _float2
+            local pad = frame:padding()
+            x = math.max(x, a[3] / 2 + pad[4])
+            x = math.min(x, 0.8 - a[3] / 2 - pad[2])
+            y = math.max(y, a[4] / 2 + pad[3])
+            y = math.min(y, 0.6 - a[4] / 2 - pad[1])
+            japi.FrameClearAllPoints(frame:handle())
+            japi.FrameSetPoint(frame:handle(), FRAME_ALIGN_CENTER, FrameGameUI:handle(), FRAME_ALIGN_LEFT_BOTTOM, x, y)
+            frame:setDragXY(x, y)
         end,
     })
     cs:setQuote("followFrame", {
         start = function(data)
         end,
     })
-
+    
+    
+    -- 拓展Cursor
+    
+    --- 是否拖拽中
+    ---@return boolean
+    function cs:isDragging()
+        return self:currentQuoteKey() == "drag"
+    end
+    --- 是否跟踪图层中
+    ---@return boolean
+    function cs:isFollowing()
+        return self:currentQuoteKey() == "follow"
+    end
 end)
