@@ -726,8 +726,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         ---@param evtData noteOnMouseEventMoveData
         refresh = function(data, evtData)
             local rx, ry = evtData.rx, evtData.ry
-            local align = FRAME_ALIGN_CENTER
-            csPointer:relation(align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
+            csPointer:relation(FRAME_ALIGN_CENTER, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
             ---@type FrameDrag
             local frame = data.frame
             local a = frame:anchor()
@@ -738,13 +737,84 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             x = math.min(x, 0.8 - a[3] / 2 - pad[2])
             y = math.max(y, a[4] / 2 + pad[3])
             y = math.min(y, 0.6 - a[4] / 2 - pad[1])
-            japi.FrameClearAllPoints(frame:handle())
-            japi.FrameSetPoint(frame:handle(), FRAME_ALIGN_CENTER, FrameGameUI:handle(), FRAME_ALIGN_LEFT_BOTTOM, x, y)
+            local h = frame:handle()
+            japi.FrameClearAllPoints(h)
+            japi.FrameSetPoint(h, FRAME_ALIGN_CENTER, FrameGameUI:handle(), FRAME_ALIGN_LEFT_BOTTOM, x, y)
             frame:setReleasePoint(x, y)
         end,
     })
-    cs:setQuote("followFrame", {
+    cs:setQuote("follow", {
         start = function(data)
+            ---@type Ability|Item
+            local obj = data.object
+            local frame = data.frame
+            local texture, size
+            if (inClass(frame, FrameButtonClass, FrameBackdropClass, FrameBackdropTileClass)) then
+                texture = frame:texture()
+                size = frame:size()
+            else
+                texture = data.texture
+                size = data.size
+            end
+            local rx, ry = japi.MouseRX(), japi.MouseRY()
+            csFollow:texture(texture)
+                    :size(size[1], size[2])
+                    :relation(FRAME_ALIGN_CENTER, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
+                    :alpha(150)
+                    :show(true)
+            
+            if (isClass(obj, ItemClass) and obj:dropable()) then
+                local selection = PlayerLocal():selection()
+                mouse.onLeftClick("followDrop", function()
+                    if (mouse.isSafety()) then
+                        local tx, ty = japi.GetMouseTerrainX(), japi.GetMouseTerrainY()
+                        local closest = Group():closest(UnitClass, {
+                            limit = 5,
+                            circle = {
+                                x = tx,
+                                y = ty,
+                                radius = 150,
+                            },
+                            ---@param enumUnit Unit
+                            filter = function(enumUnit)
+                                return enumUnit ~= selection and enumUnit:isAlive() and enumUnit:owner() == selection:owner()
+                            end
+                        })
+                        if (isClass(closest, UnitClass)) then
+                            sync.send("G_GAME_SYNC", { "item_deliver_cursor", obj:id(), closest:id() })
+                        else
+                            sync.send("G_GAME_SYNC", { "item_drop_cursor", obj:id(), tx, ty })
+                        end
+                        cs:quoteClear()
+                    end
+                    return false
+                end)
+            end
+        end,
+        over = function()
+            mouse.onLeftClick("followDrop", nil)
+        end,
+        ---@param evtData noteOnMouseEventMoveData
+        refresh = function(_, evtData)
+            local siz = csFollow:size()
+            local rx, ry = evtData.rx, evtData.ry
+            if (siz ~= nil) then
+                local hw = siz[1] / 2
+                local hh = siz[2] / 2
+                if (rx - hw < 0) then
+                    rx = hw
+                end
+                if (rx + hw > 0.8) then
+                    rx = 0.8 - hw
+                end
+                if (ry - hh < 0) then
+                    ry = hh
+                end
+                if (ry + hh > 0.6) then
+                    ry = 0.6 - hh
+                end
+            end
+            csFollow:relation(FRAME_ALIGN_CENTER, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
         end,
     })
     
