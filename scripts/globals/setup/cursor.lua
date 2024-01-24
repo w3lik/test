@@ -158,76 +158,76 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
     end
     
     -- 自定义默认指针逻辑
-    cs:setDefault({
-        start = function()
-            _int1 = 0
-            _bool1 = false
-        end,
-        refresh = function(evtData)
-            local p, rx, ry = evtData.triggerPlayer, evtData.rx, evtData.ry
-            if (rx < 0.004 or rx > 0.796 or ry < 0.004 or ry >= 0.596) then
-                csPointer:alpha(0)
-                return
-            end
-            local drx = japi.FrameDisAdaptive(rx)
-            -- 压缩比例计算
-            local adx = 0.8 - japi.FrameAdaptive(csTexture.pointer.width)
-            local rmp = 1
-            if (rx > adx) then
-                local rxp = (csTexture.pointer.width - (rx - adx)) / csTexture.pointer.width
-                rmp = math.min(rmp, rxp)
-            end
-            if (ry < csTexture.pointer.height) then
-                local ryp = (csTexture.pointer.height - (csTexture.pointer.height - ry)) / csTexture.pointer.height
-                rmp = math.min(rmp, ryp)
-            end
-            --
-            local align = FRAME_ALIGN_LEFT_TOP
-            local texture = csTexture.pointer.normal
-            local alpha = csTexture.pointer.alpha
-            local width = csTexture.pointer.width * rmp
-            local height = csTexture.pointer.height * rmp
-            local isFleshing = false
-            --
-            ---@type Unit|Item
-            local under = h2o(japi.GetUnitUnderMouse())
-            if (inClass(under, UnitClass, ItemClass) and under:isAlive()) then
-                if (under:isEnemy(p)) then
-                    texture = csTexture.pointer.enemy
-                    isFleshing = true
-                else
-                    texture = csTexture.pointer.ally
-                end
-            end
-            
-            local ci = 10
-            local half = math.ceil((alpha or 255) / 3)
-            local cn = _int1
-            if (isFleshing) then
-                if (_bool1 ~= true) then
-                    cn = cn + ci
-                    if (cn >= 0) then
-                        cn = 0
-                        _bool1 = true
-                    end
-                else
-                    cn = cn - ci
-                    if (cn < -half) then
-                        cn = -half
-                        _bool1 = false
-                    end
-                end
-                _int1 = cn
-            else
-                _int1 = 0
-                _bool1 = false
-            end
-            csPointer:texture(texture)
-            csPointer:alpha(alpha + cn)
-            csPointer:size(width, height)
-            csPointer:relation(align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, drx, ry)
-        end
-    })
+    --cs:setDefault({
+    --    start = function()
+    --        _int1 = 0
+    --        _bool1 = false
+    --    end,
+    --    refresh = function(evtData)
+    --        local p, rx, ry = evtData.triggerPlayer, evtData.rx, evtData.ry
+    --        if (rx < 0.004 or rx > 0.796 or ry < 0.004 or ry >= 0.596) then
+    --            csPointer:alpha(0)
+    --            return
+    --        end
+    --        local drx = japi.FrameDisAdaptive(rx)
+    --        -- 压缩比例计算
+    --        local adx = 0.8 - japi.FrameAdaptive(csTexture.pointer.width)
+    --        local rmp = 1
+    --        if (rx > adx) then
+    --            local rxp = (csTexture.pointer.width - (rx - adx)) / csTexture.pointer.width
+    --            rmp = math.min(rmp, rxp)
+    --        end
+    --        if (ry < csTexture.pointer.height) then
+    --            local ryp = (csTexture.pointer.height - (csTexture.pointer.height - ry)) / csTexture.pointer.height
+    --            rmp = math.min(rmp, ryp)
+    --        end
+    --        --
+    --        local align = FRAME_ALIGN_LEFT_TOP
+    --        local texture = csTexture.pointer.normal
+    --        local alpha = csTexture.pointer.alpha
+    --        local width = csTexture.pointer.width * rmp
+    --        local height = csTexture.pointer.height * rmp
+    --        local isFleshing = false
+    --        --
+    --        ---@type Unit|Item
+    --        local under = h2o(japi.GetUnitUnderMouse())
+    --        if (inClass(under, UnitClass, ItemClass) and under:isAlive()) then
+    --            if (under:isEnemy(p)) then
+    --                texture = csTexture.pointer.enemy
+    --                isFleshing = true
+    --            else
+    --                texture = csTexture.pointer.ally
+    --            end
+    --        end
+    --
+    --        local ci = 10
+    --        local half = math.ceil((alpha or 255) / 3)
+    --        local cn = _int1
+    --        if (isFleshing) then
+    --            if (_bool1 ~= true) then
+    --                cn = cn + ci
+    --                if (cn >= 0) then
+    --                    cn = 0
+    --                    _bool1 = true
+    --                end
+    --            else
+    --                cn = cn - ci
+    --                if (cn < -half) then
+    --                    cn = -half
+    --                    _bool1 = false
+    --                end
+    --            end
+    --            _int1 = cn
+    --        else
+    --            _int1 = 0
+    --            _bool1 = false
+    --        end
+    --        csPointer:texture(texture)
+    --        csPointer:alpha(alpha + cn)
+    --        csPointer:size(width, height)
+    --        csPointer:relation(align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, drx, ry)
+    --    end
+    --})
     
     cs:setQuote(ABILITY_TARGET_TYPE.tag_nil, {
         start = function()
@@ -730,6 +730,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             _float2 = ry - a[2]
         end,
         over = function()
+            csPointer:alpha(0)
             abilityOver()
             _float1 = nil
             _float2 = nil
@@ -738,7 +739,8 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         refresh = function(evtData)
             local data = cs:currentQuoteData()
             local rx, ry = evtData.rx, evtData.ry
-            csPointer:relation(FRAME_ALIGN_CENTER, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
+            local drx = japi.FrameDisAdaptive(rx)
+            csPointer:relation(FRAME_ALIGN_CENTER, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, drx, ry)
             ---@type FrameDrag
             local frame = data.frame
             local a = frame:anchor()
