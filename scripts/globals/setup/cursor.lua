@@ -264,6 +264,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             _unit1 = nil
         end,
         over = function()
+            csPointer:alpha(0)
             abilityOver()
             if (isClass(_unit1, UnitClass)) then
                 J.SetUnitVertexColor(_unit1:handle(), table.unpack(_unit1:rgba()))
@@ -359,6 +360,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             end
         end,
         over = function()
+            csPointer:alpha(0)
             abilityOver()
         end,
         ---@param evtData noteOnMouseEventMoveData
@@ -426,6 +428,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             _unit1 = nil
         end,
         over = function()
+            csArea:show(false)
             abilityOver()
             if (type(_unit1) == "table") then
                 for _, u in ipairs(_unit1) do
@@ -577,6 +580,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             _unit1 = nil
         end,
         over = function()
+            csArea:show(false)
             abilityOver()
             if (type(_unit1) == "table") then
                 for _, u in ipairs(_unit1) do
