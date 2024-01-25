@@ -158,11 +158,8 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
     end
     
     -- 自定义默认指针逻辑
-    cs:setDefault({
+    cs:setDefault(false, {
         start = function()
-            if (csTexture.pointer.normal == nil) then
-                return false
-            end
             _int1 = 0
             _bool1 = false
         end,
@@ -397,11 +394,11 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             csPointer:size(width, height)
             csPointer:relation(align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
         end,
-        ---@param evtData noteOnMouseEventMoveData
+        ---@param evtData noteOnMouseEventClickData
         leftClick = function(evtData)
             local data = cs:currentQuoteData()
             local ab = data.ability
-            if (true ~= mouse.isSafety()) then
+            if (true ~= mouse.isSafety(evtData.rx, evtData.ry)) then
                 return
             end
             local cond = {
@@ -547,11 +544,11 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             csArea:position(tx, ty)
             csArea:show(true)
         end,
-        ---@param evtData noteOnMouseEventMoveData
+        ---@param evtData noteOnMouseEventClickData
         leftClick = function(evtData)
             local data = cs:currentQuoteData()
             local ab = data.ability
-            if (true ~= mouse.isSafety()) then
+            if (true ~= mouse.isSafety(evtData.rx, evtData.ry)) then
                 return
             end
             local cond = {
@@ -690,11 +687,11 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             csArea:position(tx, ty)
             csArea:show(true)
         end,
-        ---@param evtData noteOnMouseEventMoveData
+        ---@param evtData noteOnMouseEventClickData
         leftClick = function(evtData)
             local data = cs:currentQuoteData()
             local ab = data.ability
-            if (true ~= mouse.isSafety()) then
+            if (true ~= mouse.isSafety(evtData.rx, evtData.ry)) then
                 return
             end
             local cond = {
@@ -788,8 +785,8 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             
             if (isClass(obj, ItemClass) and obj:dropable()) then
                 local selection = PlayerLocal():selection()
-                mouse.onLeftClick("followDrop", function()
-                    if (mouse.isSafety()) then
+                mouse.onLeftClick("followDrop", function(evtData)
+                    if (mouse.isSafety(evtData.rx, evtData.ry)) then
                         local tx, ty = japi.GetMouseTerrainX(), japi.GetMouseTerrainY()
                         local closest = Group():closest(UnitClass, {
                             limit = 5,
@@ -815,6 +812,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             end
         end,
         over = function()
+            csFollow:show(false)
             local data = cs:currentQuoteData()
             data.over()
             mouse.onLeftClick("followDrop", nil)
@@ -841,7 +839,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             end
             csFollow:relation(FRAME_ALIGN_CENTER, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
         end,
-        ---@param evtData noteOnMouseEventMoveData
+        ---@param evtData noteOnMouseEventClickData
         rightClick = function(evtData)
             local data = cs:currentQuoteData()
             data.rightClick(evtData)
