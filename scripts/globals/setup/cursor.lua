@@ -158,7 +158,8 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
     end
     
     -- 自定义默认指针逻辑
-    cs:setDefault(false, {
+    cs:setStatus(CURSOR_DEFAULT_NAME, false)
+    cs:setDefault({
         start = function()
             _int1 = 0
             _bool1 = false
