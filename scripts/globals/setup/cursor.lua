@@ -61,7 +61,6 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
     end)
     
     -- 指针配置
-    local cs = Cursor()
     local csFollow = FrameBackdrop("myFollow", FrameGameUI):show(false) -- 跟踪比指针底层所以先定义
     local csPointer = FrameBackdrop("myPointer", FrameGameUI):adaptive(true):size(0.01, 0.01)
     local csArea = Image("Framework\\ui\\nil.tga", 16, 16):show(false)
@@ -158,8 +157,8 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
     end
     
     -- 自定义默认指针逻辑
-    cs:setStatus(CURSOR_DEFAULT_NAME, false)
-    cs:setDefault({
+    cursor.setStatus(cursor._default, false)
+    cursor.setDefault({
         start = function()
             _int1 = 0
             _bool1 = false
@@ -230,22 +229,22 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end
     })
     
-    cs:setQuote(ABILITY_TARGET_TYPE.tag_nil, {
+    cursor.setQuote(ABILITY_TARGET_TYPE.tag_nil, {
         start = function()
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             local ab = data.ability
             if (true == abilityCheck(ab)) then
                 audio(Vcm("war3_MouseClick1"))
                 sync.send("G_GAME_SYNC", { "ability_effective", ab:id() })
-                cs:quoteOver()
+                cursor.quoteOver()
             end
             return false
         end,
     })
     
-    cs:setQuote(ABILITY_TARGET_TYPE.tag_unit, {
+    cursor.setQuote(ABILITY_TARGET_TYPE.tag_unit, {
         start = function()
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             local ab = data.ability
             if (true == abilityStart(ab)) then
                 audio(Vcm("war3_MouseClick1"))
@@ -271,17 +270,17 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         ---@param evtData noteOnMouseEventMoveData
         refresh = function(evtData)
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             ---@type Ability
             local ab = data.ability
             if (isClass(ab, AbilityClass) == false) then
-                cs:quoteOver()
+                cursor.quoteOver()
                 return
             end
             ---@type Unit
             local bu = ab:bindUnit()
             if (ab:isProhibiting() or ab:coolDownRemain() > 0 or isClass(bu, UnitClass) == false) then
-                cs:quoteOver()
+                cursor.quoteOver()
                 return
             end
             local p, rx, ry = evtData.triggerPlayer, evtData.rx, evtData.ry
@@ -334,7 +333,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         ---@param evtData noteOnMouseEventMoveData
         leftClick = function(evtData)
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             local ab = data.ability
             ---@type Unit
             local targetUnit = _unit1
@@ -343,15 +342,15 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                     evtData.triggerPlayer:alert(colour.hex(colour.gold, "目标不允许"))
                 else
                     sync.send("G_GAME_SYNC", { "ability_effective_u", ab:id(), targetUnit:id() })
-                    cs:quoteOver()
+                    cursor.quoteOver()
                 end
             end
         end,
     })
     
-    cs:setQuote(ABILITY_TARGET_TYPE.tag_loc, {
+    cursor.setQuote(ABILITY_TARGET_TYPE.tag_loc, {
         start = function()
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             local ab = data.ability
             if (true == abilityStart(ab)) then
                 audio(Vcm("war3_MouseClick1"))
@@ -363,17 +362,17 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         ---@param evtData noteOnMouseEventMoveData
         refresh = function(evtData)
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             ---@type Ability
             local ab = data.ability
             if (isClass(ab, AbilityClass) == false) then
-                cs:quoteOver()
+                cursor.quoteOver()
                 return
             end
             ---@type Unit
             local bu = ab:bindUnit()
             if (ab:isProhibiting() or ab:coolDownRemain() > 0 or isClass(bu, UnitClass) == false) then
-                cs:quoteOver()
+                cursor.quoteOver()
                 return
             end
             local rx, ry = evtData.rx, evtData.ry
@@ -397,7 +396,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         ---@param evtData noteOnMouseEventClickData
         leftClick = function(evtData)
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             local ab = data.ability
             if (true ~= mouse.isSafety(evtData.rx, evtData.ry)) then
                 return
@@ -411,13 +410,13 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                 return
             end
             sync.send("G_GAME_SYNC", { "ability_effective_xyz", ab:id(), cond.x, cond.y, japi.GetMouseTerrainZ() })
-            cs:quoteOver()
+            cursor.quoteOver()
         end,
     })
     
-    cs:setQuote(ABILITY_TARGET_TYPE.tag_circle, {
+    cursor.setQuote(ABILITY_TARGET_TYPE.tag_circle, {
         start = function()
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             local ab = data.ability
             if (true == abilityStart(ab)) then
                 audio(Vcm("war3_MouseClick1"))
@@ -437,17 +436,17 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         ---@param evtData noteOnMouseEventMoveData
         refresh = function(evtData)
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             ---@type Ability
             local ab = data.ability
             if (isClass(ab, AbilityClass) == false) then
-                cs:quoteOver()
+                cursor.quoteOver()
                 return
             end
             ---@type Unit
             local bu = ab:bindUnit()
             if (ab:isProhibiting() or ab:coolDownRemain() > 0 or isClass(bu, UnitClass) == false) then
-                cs:quoteOver()
+                cursor.quoteOver()
                 return
             end
             local p, rx, ry = evtData.triggerPlayer, evtData.rx, evtData.ry
@@ -547,7 +546,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         ---@param evtData noteOnMouseEventClickData
         leftClick = function(evtData)
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             local ab = data.ability
             if (true ~= mouse.isSafety(evtData.rx, evtData.ry)) then
                 return
@@ -563,13 +562,13 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                 return
             end
             sync.send("G_GAME_SYNC", { "ability_effective_xyz", ab:id(), cond.x, cond.y, japi.GetMouseTerrainZ() })
-            cs:quoteOver()
+            cursor.quoteOver()
         end,
     })
     
-    cs:setQuote(ABILITY_TARGET_TYPE.tag_square, {
+    cursor.setQuote(ABILITY_TARGET_TYPE.tag_square, {
         start = function()
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             local ab = data.ability
             if (true == abilityStart(ab)) then
                 audio(Vcm("war3_MouseClick1"))
@@ -589,17 +588,17 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         ---@param evtData noteOnMouseEventMoveData
         refresh = function(evtData)
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             ---@type Ability
             local ab = data.ability
             if (isClass(ab, AbilityClass) == false) then
-                cs:quoteOver()
+                cursor.quoteOver()
                 return
             end
             ---@type Unit
             local bu = ab:bindUnit()
             if (ab:isProhibiting() or ab:coolDownRemain() > 0 or isClass(bu, UnitClass) == false) then
-                cs:quoteOver()
+                cursor.quoteOver()
                 return
             end
             local p, rx, ry = evtData.triggerPlayer, evtData.rx, evtData.ry
@@ -690,7 +689,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         ---@param evtData noteOnMouseEventClickData
         leftClick = function(evtData)
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             local ab = data.ability
             if (true ~= mouse.isSafety(evtData.rx, evtData.ry)) then
                 return
@@ -713,13 +712,13 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                 return
             end
             sync.send("G_GAME_SYNC", { "ability_effective_xyz", ab:id(), cond.x, cond.y, japi.GetMouseTerrainZ() })
-            cs:quoteOver()
+            cursor.quoteOver()
         end,
     })
     
-    cs:setQuote("drag", {
+    cursor.setQuote("drag", {
         start = function()
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             local alpha = csTexture.drag.alpha
             local texture = csTexture.drag.normal
             local width = csTexture.drag.width
@@ -742,7 +741,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         ---@param evtData noteOnMouseEventMoveData
         refresh = function(evtData)
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             local rx, ry = evtData.rx, evtData.ry
             local drx = japi.FrameDisAdaptive(rx)
             csPointer:relation(FRAME_ALIGN_CENTER, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, drx, ry)
@@ -763,9 +762,9 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
     })
     
-    cs:setQuote("follow", {
+    cursor.setQuote("follow", {
         start = function()
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             ---@type Ability|Item
             local obj = data.object
             local frame = data.frame
@@ -806,7 +805,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                         else
                             sync.send("G_GAME_SYNC", { "item_drop_cursor", obj:id(), tx, ty })
                         end
-                        cs:quoteOver()
+                        cursor.quoteOver()
                     end
                     return false
                 end)
@@ -814,7 +813,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         over = function()
             csFollow:show(false)
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             data.over()
             mouse.onLeftClick("followDrop", nil)
         end,
@@ -842,7 +841,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
         ---@param evtData noteOnMouseEventClickData
         rightClick = function(evtData)
-            local data = cs:currentQuoteData()
+            local data = cursor.currentData()
             data.rightClick(evtData)
         end,
     })
@@ -852,12 +851,12 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
     
     --- 是否拖拽中
     ---@return boolean
-    function cs:isDragging()
-        return self:currentQuoteKey() == "drag"
+    function cursor.isDragging()
+        return cursor.currentKey() == "drag"
     end
     --- 是否跟踪图层中
     ---@return boolean
-    function cs:isFollowing()
-        return self:currentQuoteKey() == "follow"
+    function cursor.isFollowing()
+        return cursor.currentKey() == "follow"
     end
 end)

@@ -28,7 +28,7 @@ end)
 ---@param evtData noteOnUnitCritAbilityData
 event.registerReaction(EVENT.Unit.CritAbility, function(evtData)
     evtData.targetUnit:attach("lik_crit_ability", "origin", 0.5)
-    ttg.model({
+    mtg.model({
         model = "lik_ttg_crit",
         size = 1.4,
         x = evtData.targetUnit:x(),
@@ -46,7 +46,7 @@ end)
 ---@param evtData noteOnUnitImmuneInvincibleData
 event.registerReaction(EVENT.Unit.ImmuneInvincible, function(evtData)
     evtData.triggerUnit:attach("DivineShieldTarget", "origin", 1)
-    ttg.model({
+    mtg.model({
         model = "lik_ttg_immune_invincible",
         size = 1.2,
         x = evtData.triggerUnit:x(),
@@ -58,7 +58,7 @@ event.registerReaction(EVENT.Unit.ImmuneInvincible, function(evtData)
 end)
 ---@param evtData noteOnUnitImmuneDefendData
 event.registerReaction(EVENT.Unit.ImmuneDefend, function(evtData)
-    ttg.model({
+    mtg.model({
         model = "lik_ttg_immune_damage",
         size = 0.7,
         x = evtData.triggerUnit:x(),
@@ -70,7 +70,7 @@ event.registerReaction(EVENT.Unit.ImmuneDefend, function(evtData)
 end)
 ---@param evtData noteOnUnitImmuneReductionData
 event.registerReaction(EVENT.Unit.ImmuneReduction, function(evtData)
-    ttg.model({
+    mtg.model({
         model = "lik_ttg_immune_damage",
         size = 0.7,
         x = evtData.triggerUnit:x(),
@@ -82,7 +82,7 @@ event.registerReaction(EVENT.Unit.ImmuneReduction, function(evtData)
 end)
 ---@param evtData noteOnUnitImmuneEnchantData
 event.registerReaction(EVENT.Unit.ImmuneEnchant, function(evtData)
-    ttg.model({
+    mtg.model({
         model = "lik_ttg_immune_enchant",
         size = 0.7,
         x = evtData.triggerUnit:x(),
@@ -123,7 +123,7 @@ end)
 ---@param evtData noteOnUnitBeShieldData
 event.registerReaction(EVENT.Unit.Be.Shield, function(evtData)
     local u = evtData.triggerUnit
-    ttg.word({
+    mtg.word({
         style = "default",
         str = math.format(evtData.value, 0),
         width = 7.5,
@@ -144,7 +144,7 @@ event.registerReaction(EVENT.Unit.Hurt, function(evtData)
         height = 300
     end
     local u = evtData.triggerUnit
-    ttg.word({
+    mtg.word({
         style = "default",
         str = str,
         width = 12,
@@ -173,7 +173,7 @@ event.registerReaction(EVENT.Unit.Enchant, function(evtData)
     }
     if (m[evtData.enchantType.value] ~= nil) then
         local u = evtData.triggerUnit
-        ttg.model({
+        mtg.model({
             model = m[evtData.enchantType.value],
             size = 1.2,
             x = u:x() - math.rand(30, -30),
