@@ -1,11 +1,12 @@
 local damageFlow = Flow("damage")
-    :abort(
-    function(data)
-        return data.damage <= 0
-    end)
+
+--- 伤害为0中止
+damageFlow:abort(function(data)
+    return data.damage <= 0
+end)
 
 --- 提取一些需要的参数
-damageFlow:set("prop", function(data)
+damageFlow:flux("prop", function(data)
     data.defend = data.targetUnit:defend()
     data.avoid = data.targetUnit:avoid()
     if (isClass(data.sourceUnit, UnitClass)) then
@@ -14,7 +15,7 @@ damageFlow:set("prop", function(data)
 end)
 
 --- 判断无视装甲类型
-damageFlow:set("breakArmor", function(data)
+damageFlow:flux("breakArmor", function(data)
     local ignore = { defend = false, avoid = false, invincible = false }
     if (#data.breakArmor > 0) then
         for _, b in ipairs(data.breakArmor) do
@@ -47,7 +48,7 @@ damageFlow:set("breakArmor", function(data)
 end)
 
 --- 伤害加深(%)
-damageFlow:set("damageIncrease", function(data)
+damageFlow:flux("damageIncrease", function(data)
     local approve = (data.sourceUnit ~= nil)
     if (approve) then
         local damageIncrease = data.sourceUnit:damageIncrease()
@@ -58,7 +59,7 @@ damageFlow:set("damageIncrease", function(data)
 end)
 
 --- 护盾
-damageFlow:set("shield", function(data)
+damageFlow:flux("shield", function(data)
     local sh = data.targetUnit:shieldCur()
     if (sh > 0) then
         local sd = 0
@@ -78,7 +79,7 @@ damageFlow:set("shield", function(data)
 end)
 
 --- 受伤加深(%)
-damageFlow:set("hurtIncrease", function(data)
+damageFlow:flux("hurtIncrease", function(data)
     local hurtIncrease = data.targetUnit:hurtIncrease()
     if (hurtIncrease > 0) then
         data.damage = data.damage * (1 + hurtIncrease * 0.01)
@@ -86,7 +87,7 @@ damageFlow:set("hurtIncrease", function(data)
 end)
 
 --- 自身暴击
-damageFlow:set("crit", function(data)
+damageFlow:flux("crit", function(data)
     local approve = (data.sourceUnit ~= nil and (data.damageSrc == DAMAGE_SRC.attack))
     if (approve) then
         local crit = data.sourceUnit:crit()
@@ -106,7 +107,7 @@ damageFlow:set("crit", function(data)
 end)
 
 --- 回避
-damageFlow:set("avoid", function(data)
+damageFlow:flux("avoid", function(data)
     local approve = (data.avoid > 0 and (data.damageSrc == DAMAGE_SRC.attack or data.damageSrc == DAMAGE_SRC.rebound))
     if (approve) then
         if (data.avoid > math.rand(1, 100)) then
@@ -120,7 +121,7 @@ damageFlow:set("avoid", function(data)
 end)
 
 --- 自身攻击眩晕
-damageFlow:set("stun", function(data)
+damageFlow:flux("stun", function(data)
     local approve = (data.sourceUnit ~= nil and (data.damageSrc == DAMAGE_SRC.attack))
     if (approve) then
         local stun = data.sourceUnit:stun()
@@ -132,7 +133,7 @@ damageFlow:set("stun", function(data)
 end)
 
 --- 反伤(%)
-damageFlow:set("hurtRebound", function(data)
+damageFlow:flux("hurtRebound", function(data)
     -- 抵抗
     local approve = (data.sourceUnit ~= nil and data.damageSrc == DAMAGE_SRC.rebound)
     if (approve) then
@@ -204,7 +205,7 @@ damageFlow:set("hurtRebound", function(data)
 end)
 
 --- 防御
-damageFlow:set("defend", function(data)
+damageFlow:flux("defend", function(data)
     if (data.defend < 0) then
         data.damage = data.damage + math.abs(data.defend)
     elseif (data.defend > 0) then
@@ -219,7 +220,7 @@ damageFlow:set("defend", function(data)
 end)
 
 --- 减伤(%)
-damageFlow:set("hurtReduction", function(data)
+damageFlow:flux("hurtReduction", function(data)
     local hurtReduction = data.targetUnit:hurtReduction()
     if (hurtReduction > 0) then
         data.damage = data.damage * (1 - hurtReduction * 0.01)
@@ -233,7 +234,7 @@ damageFlow:set("hurtReduction", function(data)
 end)
 
 --- 攻击吸血
-damageFlow:set("hpSuckAttack", function(data)
+damageFlow:flux("hpSuckAttack", function(data)
     local approve = (data.sourceUnit ~= nil and data.damageSrc == DAMAGE_SRC.attack)
     if (approve) then
         local percent = data.sourceUnit:hpSuckAttack() - data.targetUnit:resistance("hpSuckAttack")
@@ -248,7 +249,7 @@ damageFlow:set("hpSuckAttack", function(data)
 end)
 
 --- 技能吸血
-damageFlow:set("hpSuckAbility", function(data)
+damageFlow:flux("hpSuckAbility", function(data)
     local approve = (data.sourceUnit ~= nil and data.damageSrc == DAMAGE_SRC.ability)
     if (approve) then
         local percent = data.sourceUnit:hpSuckAbility() - data.targetUnit:resistance("hpSuckAbility")
@@ -263,7 +264,7 @@ damageFlow:set("hpSuckAbility", function(data)
 end)
 
 --- 攻击吸魔;吸魔会根据伤害，扣减目标的魔法值，再据百分比增加自己的魔法值;目标魔法值不足 1 从而吸收时，则无法吸取
-damageFlow:set("mpSuckAttack", function(data)
+damageFlow:flux("mpSuckAttack", function(data)
     local approve = (data.sourceUnit ~= nil and data.damageSrc == DAMAGE_SRC.attack and data.sourceUnit:mp() > 0 and data.targetUnit:mpCur() > 0)
     if (approve) then
         local percent = data.sourceUnit:mpSuckAttack() - data.targetUnit:resistance("mpSuckAttack")
@@ -282,7 +283,7 @@ damageFlow:set("mpSuckAttack", function(data)
 end)
 
 --- 技能吸魔;吸魔会根据伤害，扣减目标的魔法值，再据百分比增加自己的魔法值;目标魔法值不足 1 从而吸收时，则无法吸取
-damageFlow:set("mpSuckAbility", function(data)
+damageFlow:flux("mpSuckAbility", function(data)
     local approve = (data.sourceUnit ~= nil and data.damageSrc == DAMAGE_SRC.ability and data.sourceUnit:mp() > 0 and data.targetUnit:mpCur() > 0)
     if (approve) then
         local percent = data.sourceUnit:mpSuckAbility() - data.targetUnit:resistance("mpSuckAbility")
@@ -301,7 +302,7 @@ damageFlow:set("mpSuckAbility", function(data)
 end)
 
 --- 附魔加成|抵抗|精通|附着|免疫
-damageFlow:set("enchant", function(data)
+damageFlow:flux("enchant", function(data)
     local percent = 0
     if (data.sourceUnit ~= nil) then
         local amplify = data.sourceUnit:enchant(data.damageType.value)

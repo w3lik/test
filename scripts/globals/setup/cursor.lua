@@ -487,7 +487,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             local tx = japi.GetMouseTerrainX()
             local ty = japi.GetMouseTerrainY()
             local prevUnit = _unit1
-            local newUnits = group(UnitClass):catch({
+            local newUnits = Group(UnitClass):catch({
                 limit = 30,
                 circle = {
                     x = tx,
@@ -626,7 +626,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             local tx = japi.GetMouseTerrainX()
             local ty = japi.GetMouseTerrainY()
             local prevUnit = _unit1
-            local newUnits = group(UnitClass):catch({
+            local newUnits = Group(UnitClass):catch({
                 limit = 30,
                 square = {
                     x = tx,
@@ -788,7 +788,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
                 mouse.onLeftClick("followDrop", function(evtData)
                     if (mouse.isSafety(evtData.rx, evtData.ry)) then
                         local tx, ty = japi.GetMouseTerrainX(), japi.GetMouseTerrainY()
-                        local closest = group(UnitClass):closest({
+                        local closest = Group(UnitClass):closest({
                             limit = 5,
                             circle = {
                                 x = tx,
