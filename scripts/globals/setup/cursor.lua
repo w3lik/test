@@ -235,7 +235,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             local data = cursor.currentData()
             local ab = data.ability
             if (true == abilityCheck(ab)) then
-                audio(Vcm("war3_MouseClick1"))
+                sound.vcm("war3_MouseClick1")
                 sync.send("G_GAME_SYNC", { "ability_effective", ab:id() })
                 cursor.quoteOver()
             end
@@ -248,7 +248,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             local data = cursor.currentData()
             local ab = data.ability
             if (true == abilityStart(ab)) then
-                audio(Vcm("war3_MouseClick1"))
+                sound.vcm("war3_MouseClick1")
                 -- 双击对己释放
                 local u = ab:bindUnit()
                 if (ab:isCastTarget(u)) then
@@ -354,7 +354,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             local data = cursor.currentData()
             local ab = data.ability
             if (true == abilityStart(ab)) then
-                audio(Vcm("war3_MouseClick1"))
+                sound.vcm("war3_MouseClick1")
             end
         end,
         over = function()
@@ -420,7 +420,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             local data = cursor.currentData()
             local ab = data.ability
             if (true == abilityStart(ab)) then
-                audio(Vcm("war3_MouseClick1"))
+                sound.vcm("war3_MouseClick1")
             end
             _int1 = -1
             _unit1 = nil
@@ -572,7 +572,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
             local data = cursor.currentData()
             local ab = data.ability
             if (true == abilityStart(ab)) then
-                audio(Vcm("war3_MouseClick1"))
+                sound.vcm("war3_MouseClick1")
             end
             _int1 = -1
             _unit1 = nil
