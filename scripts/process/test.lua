@@ -5,7 +5,7 @@ process:onStart(function(this)
     print("Hello, Lik!")
     echo("你好，Lik！")
 
-    Bgm():play("lik")
+    sound.bgm("lik")
 
     local bubble = this:bubble()
     bubble.eff = Effect("Echo", 0, 0, 0, -1):rotateZ(270)
@@ -16,6 +16,6 @@ end)
 
 process:onOver(function(this)
 
-    Bgm():stop()
+    sound.bgmStop()
 
 end)
