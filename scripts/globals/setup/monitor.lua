@@ -1,8 +1,8 @@
 --- 恢复生命监听器
 ---@param obj Unit
-Monitor("hp_regen")
-    :frequency(0.2)
-    :actionFunc(
+monitor.build(
+    "hp_regen",
+    0.2,
     function(obj)
         local regen = 0.2 * obj:hpRegen()
         local cure = (obj:prop("cure") or 0) * 0.01
@@ -14,14 +14,16 @@ Monitor("hp_regen")
             v = math.min(0, cure - 1) * regen
             obj:hpCur("-=" .. v)
         end
+    end,
+    function(obj)
+        return obj:isDead() or obj:hpRegen() == nil or obj:hpRegen() == 0
     end)
-    :ignoreFilter(function(obj) return obj:isDead() or obj:hpRegen() == nil or obj:hpRegen() == 0 end)
 
 --- 恢复魔法监听器
 ---@param obj Unit
-Monitor("mp_regen")
-    :frequency(0.3)
-    :actionFunc(
+monitor.build(
+    "mp_regen",
+    0.3,
     function(obj)
         local regen = 0.3 * obj:mpRegen()
         local cure = (obj:prop("cure") or 0) * 0.01
@@ -33,5 +35,7 @@ Monitor("mp_regen")
             v = math.min(0, cure - 1) * regen
             obj:mpCur("-=" .. v)
         end
+    end,
+    function(obj)
+        return obj:isDead() or obj:mpRegen() == nil or obj:mpRegen() == 0
     end)
-    :ignoreFilter(function(obj) return obj:isDead() or obj:mpRegen() == nil or obj:mpRegen() == 0 end)
