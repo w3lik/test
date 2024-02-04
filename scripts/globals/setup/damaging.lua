@@ -242,8 +242,8 @@ damageFlow:flux("hpSuckAttack", function(data)
         if (percent > 0 and val > 0) then
             data.sourceUnit:hpCur("+=" .. val)
             --- 触发吸血事件
-            event.trigger(data.sourceUnit, event.type.unit.hPSuckAttack, { targetUnit = data.targetUnit, value = val, percent = percent })
-            event.trigger(data.targetUnit, event.type.unit.be.hPSuckAttack, { sourceUnit = data.sourceUnit, value = val, percent = percent })
+            event.trigger(data.sourceUnit, event.type.unit.hpSuckAttack, { targetUnit = data.targetUnit, value = val, percent = percent })
+            event.trigger(data.targetUnit, event.type.unit.be.hpSuckAttack, { sourceUnit = data.sourceUnit, value = val, percent = percent })
         end
     end
 end)
@@ -257,8 +257,8 @@ damageFlow:flux("hpSuckAbility", function(data)
         if (percent > 0 and val > 0) then
             data.sourceUnit:hpCur("+=" .. val)
             --- 触发技能吸血事件
-            event.trigger(data.sourceUnit, event.type.unit.hPSuckAbility, { targetUnit = data.targetUnit, value = val, percent = percent })
-            event.trigger(data.targetUnit, event.type.unit.be.hPSuckAbility, { sourceUnit = data.sourceUnit, value = val, percent = percent })
+            event.trigger(data.sourceUnit, event.type.unit.hpSuckAbility, { targetUnit = data.targetUnit, value = val, percent = percent })
+            event.trigger(data.targetUnit, event.type.unit.be.hpSuckAbility, { sourceUnit = data.sourceUnit, value = val, percent = percent })
         end
     end
 end)
@@ -275,8 +275,8 @@ damageFlow:flux("mpSuckAttack", function(data)
                 data.targetUnit:mpCur("-=" .. val)
                 data.sourceUnit:mpCur("+=" .. val)
                 --- 触发吸魔事件
-                event.trigger(data.sourceUnit, event.type.unit.mPSuckAttack, { targetUnit = data.targetUnit, value = val, percent = percent })
-                event.trigger(data.targetUnit, event.type.unit.be.mPSuckAttack, { sourceUnit = data.sourceUnit, value = val, percent = percent })
+                event.trigger(data.sourceUnit, event.type.unit.mpSuckAttack, { targetUnit = data.targetUnit, value = val, percent = percent })
+                event.trigger(data.targetUnit, event.type.unit.be.mpSuckAttack, { sourceUnit = data.sourceUnit, value = val, percent = percent })
             end
         end
     end
@@ -294,8 +294,8 @@ damageFlow:flux("mpSuckAbility", function(data)
                 data.targetUnit:mpCur("-=" .. val)
                 data.sourceUnit:mpCur("+=" .. val)
                 --- 触发技能吸魔事件
-                event.trigger(data.sourceUnit, event.type.unit.mPSuckAbility, { targetUnit = data.targetUnit, value = val, percent = percent })
-                event.trigger(data.targetUnit, event.type.unit.be.mPSuckAbility, { sourceUnit = data.sourceUnit, value = val, percent = percent })
+                event.trigger(data.sourceUnit, event.type.unit.mpSuckAbility, { targetUnit = data.targetUnit, value = val, percent = percent })
+                event.trigger(data.targetUnit, event.type.unit.be.mpSuckAbility, { sourceUnit = data.sourceUnit, value = val, percent = percent })
             end
         end
     end

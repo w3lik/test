@@ -93,19 +93,19 @@ event.registerReaction(event.type.unit.immuneEnchant, function(evtData)
     })
 end)
 ---@param evtData noteOnUnitHPSuckAttackData
-event.registerReaction(event.type.unit.hPSuckAttack, function(evtData)
+event.registerReaction(event.type.unit.hpSuckAttack, function(evtData)
     evtData.triggerUnit:attach("HealTarget2", "origin", 0.5)
 end)
 ---@param evtData noteOnUnitHPSuckAbilityData
-event.registerReaction(event.type.unit.hPSuckAbility, function(evtData)
+event.registerReaction(event.type.unit.hpSuckAbility, function(evtData)
     evtData.triggerUnit:attach("HealTarget2", "origin", 0.5)
 end)
 ---@param evtData noteOnUnitMPSuckAttackData
-event.registerReaction(event.type.unit.mPSuckAttack, function(evtData)
+event.registerReaction(event.type.unit.mpSuckAttack, function(evtData)
     evtData.triggerUnit:attach("AImaTarget", "origin", 0.5)
 end)
 ---@param evtData noteOnUnitMPSuckAbilityData
-event.registerReaction(event.type.unit.mPSuckAbility, function(evtData)
+event.registerReaction(event.type.unit.mpSuckAbility, function(evtData)
     evtData.triggerUnit:attach("AImaTarget", "origin", 0.5)
 end)
 ---@param evtData noteOnUnitBeStunData
