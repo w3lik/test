@@ -8,11 +8,11 @@ TPL_ABILITY.DEMO = AbilityTpl()
     })
     :targetType(ability.targetType.pas)
     :icon("ReplaceableTextures\\CommandButtons\\BTNArcaniteMelee.blp")
-    :onEvent(EVENT.Ability.Get,
+    :onEvent(event.type.ability.get,
     function(abData)
         local ak = abData.triggerAbility:id()
-        ---@param propChangeData noteOnPropChange
-        abData.triggerUnit:onEvent(EVENT.Prop.Change, ak, function(propChangeData)
+        ---@param propChangeData noteOnObjectChange
+        abData.triggerUnit:onEvent(event.type.object.change, ak, function(propChangeData)
             if (propChangeData.key == "hpCur") then
                 local u = propChangeData.triggerUnit
                 u:buffClear({ key = "剑之勇气" .. ak })
@@ -47,9 +47,9 @@ TPL_ABILITY.DEMO = AbilityTpl()
             end
         end)
     end)
-    :onEvent(EVENT.Ability.Lose,
+    :onEvent(event.type.ability.lose,
     function(abData)
         local ak = abData.triggerAbility:id()
-        abData.triggerUnit:onEvent(EVENT.Prop.Change, ak, nil)
+        abData.triggerUnit:onEvent(event.type.object.change, ak, nil)
         abData.triggerUnit:buffClear({ key = "剑之勇气" .. ak })
     end)

@@ -22,9 +22,9 @@ damageFlow:flux("breakArmor", function(data)
             if (b ~= nil) then
                 ignore[b.value] = true
                 --- 触发无视防御事件
-                event.trigger(data.sourceUnit, EVENT.Unit.BreakArmor, { targetUnit = data.targetUnit, breakType = b })
+                event.trigger(data.sourceUnit, event.type.unit.breakArmor, { targetUnit = data.targetUnit, breakType = b })
                 --- 触发被破防事件
-                event.trigger(data.targetUnit, EVENT.Unit.Be.BreakArmor, { breakUnit = data.sourceUnit, breakType = b })
+                event.trigger(data.targetUnit, event.type.unit.be.breakArmor, { breakUnit = data.sourceUnit, breakType = b })
             end
         end
     end
@@ -41,7 +41,7 @@ damageFlow:flux("breakArmor", function(data)
         if (ignore.invincible == false) then
             --- 触发无敌抵御事件
             data.damage = 0
-            event.trigger(data.targetUnit, EVENT.Unit.ImmuneInvincible, { sourceUnit = data.sourceUnit })
+            event.trigger(data.targetUnit, event.type.unit.immuneInvincible, { sourceUnit = data.sourceUnit })
             return
         end
     end
@@ -72,8 +72,8 @@ damageFlow:flux("shield", function(data)
         end
         if (sd > 0) then
             data.targetUnit:shieldCur("-=" .. sd)
-            event.trigger(data.targetUnit, EVENT.Unit.Be.Shield, { sourceUnit = data.sourceUnit, value = sd })
-            event.trigger(data.sourceUnit, EVENT.Unit.Shield, { targetUnit = data.targetUnit, value = sd })
+            event.trigger(data.targetUnit, event.type.unit.be.shield, { sourceUnit = data.sourceUnit, value = sd })
+            event.trigger(data.sourceUnit, event.type.unit.shield, { targetUnit = data.targetUnit, value = sd })
         end
     end
 end)
@@ -99,8 +99,8 @@ damageFlow:flux("crit", function(data)
                 data.avoid = 0
                 --- 触发本体暴击
                 data.crit = true
-                event.trigger(data.sourceUnit, EVENT.Unit.Crit, { targetUnit = data.targetUnit })
-                event.trigger(data.targetUnit, EVENT.Unit.Be.Crit, { sourceUnit = data.sourceUnit })
+                event.trigger(data.sourceUnit, event.type.unit.crit, { targetUnit = data.targetUnit })
+                event.trigger(data.targetUnit, event.type.unit.be.crit, { sourceUnit = data.sourceUnit })
             end
         end
     end
@@ -113,8 +113,8 @@ damageFlow:flux("avoid", function(data)
         if (data.avoid > math.rand(1, 100)) then
             -- 触发回避事件
             data.damage = 0
-            event.trigger(data.targetUnit, EVENT.Unit.Avoid, { sourceUnit = data.sourceUnit })
-            event.trigger(data.sourceUnit, EVENT.Unit.Be.Avoid, { targetUnit = data.targetUnit })
+            event.trigger(data.targetUnit, event.type.unit.avoid, { sourceUnit = data.sourceUnit })
+            event.trigger(data.sourceUnit, event.type.unit.be.avoid, { targetUnit = data.targetUnit })
             return
         end
     end
@@ -213,7 +213,7 @@ damageFlow:flux("defend", function(data)
         if (data.damage < 1) then
             -- 触发防御完全抵消事件
             data.damage = 0
-            event.trigger(data.targetUnit, EVENT.Unit.ImmuneDefend, { sourceUnit = data.sourceUnit })
+            event.trigger(data.targetUnit, event.type.unit.immuneDefend, { sourceUnit = data.sourceUnit })
             return
         end
     end
@@ -227,7 +227,7 @@ damageFlow:flux("hurtReduction", function(data)
         if (data.damage < 1) then
             -- 触发减伤完全抵消事件
             data.damage = 0
-            event.trigger(data.targetUnit, EVENT.Unit.ImmuneReduction, { sourceUnit = data.sourceUnit })
+            event.trigger(data.targetUnit, event.type.unit.immuneReduction, { sourceUnit = data.sourceUnit })
             return
         end
     end
@@ -242,8 +242,8 @@ damageFlow:flux("hpSuckAttack", function(data)
         if (percent > 0 and val > 0) then
             data.sourceUnit:hpCur("+=" .. val)
             --- 触发吸血事件
-            event.trigger(data.sourceUnit, EVENT.Unit.HPSuckAttack, { targetUnit = data.targetUnit, value = val, percent = percent })
-            event.trigger(data.targetUnit, EVENT.Unit.Be.HPSuckAttack, { sourceUnit = data.sourceUnit, value = val, percent = percent })
+            event.trigger(data.sourceUnit, event.type.unit.hPSuckAttack, { targetUnit = data.targetUnit, value = val, percent = percent })
+            event.trigger(data.targetUnit, event.type.unit.be.hPSuckAttack, { sourceUnit = data.sourceUnit, value = val, percent = percent })
         end
     end
 end)
@@ -257,8 +257,8 @@ damageFlow:flux("hpSuckAbility", function(data)
         if (percent > 0 and val > 0) then
             data.sourceUnit:hpCur("+=" .. val)
             --- 触发技能吸血事件
-            event.trigger(data.sourceUnit, EVENT.Unit.HPSuckAbility, { targetUnit = data.targetUnit, value = val, percent = percent })
-            event.trigger(data.targetUnit, EVENT.Unit.Be.HPSuckAbility, { sourceUnit = data.sourceUnit, value = val, percent = percent })
+            event.trigger(data.sourceUnit, event.type.unit.hPSuckAbility, { targetUnit = data.targetUnit, value = val, percent = percent })
+            event.trigger(data.targetUnit, event.type.unit.be.hPSuckAbility, { sourceUnit = data.sourceUnit, value = val, percent = percent })
         end
     end
 end)
@@ -275,8 +275,8 @@ damageFlow:flux("mpSuckAttack", function(data)
                 data.targetUnit:mpCur("-=" .. val)
                 data.sourceUnit:mpCur("+=" .. val)
                 --- 触发吸魔事件
-                event.trigger(data.sourceUnit, EVENT.Unit.MPSuckAttack, { targetUnit = data.targetUnit, value = val, percent = percent })
-                event.trigger(data.targetUnit, EVENT.Unit.Be.MPSuckAttack, { sourceUnit = data.sourceUnit, value = val, percent = percent })
+                event.trigger(data.sourceUnit, event.type.unit.mPSuckAttack, { targetUnit = data.targetUnit, value = val, percent = percent })
+                event.trigger(data.targetUnit, event.type.unit.be.mPSuckAttack, { sourceUnit = data.sourceUnit, value = val, percent = percent })
             end
         end
     end
@@ -294,8 +294,8 @@ damageFlow:flux("mpSuckAbility", function(data)
                 data.targetUnit:mpCur("-=" .. val)
                 data.sourceUnit:mpCur("+=" .. val)
                 --- 触发技能吸魔事件
-                event.trigger(data.sourceUnit, EVENT.Unit.MPSuckAbility, { targetUnit = data.targetUnit, value = val, percent = percent })
-                event.trigger(data.targetUnit, EVENT.Unit.Be.MPSuckAbility, { sourceUnit = data.sourceUnit, value = val, percent = percent })
+                event.trigger(data.sourceUnit, event.type.unit.mPSuckAbility, { targetUnit = data.targetUnit, value = val, percent = percent })
+                event.trigger(data.targetUnit, event.type.unit.be.mPSuckAbility, { sourceUnit = data.sourceUnit, value = val, percent = percent })
             end
         end
     end
@@ -320,7 +320,7 @@ damageFlow:flux("enchant", function(data)
         percent = percent * mystery
     end
     --- 触发附魔事件
-    event.trigger(data.targetUnit, EVENT.Unit.Enchant, { sourceUnit = data.targetUnit, enchantType = data.damageType, percent = percent })
+    event.trigger(data.targetUnit, event.type.unit.enchant, { sourceUnit = data.targetUnit, enchantType = data.damageType, percent = percent })
     if (data.damageType ~= DAMAGE_TYPE.common) then
         -- 一般设定攻击技能物品来源可触发附魔，禁止反应式伤害再触发
         if (data.damageSrc == DAMAGE_SRC.attack or data.damageSrc == DAMAGE_SRC.ability or data.damageSrc == DAMAGE_SRC.item) then
@@ -330,7 +330,7 @@ damageFlow:flux("enchant", function(data)
     if (data.targetUnit:isEnchantImmune(data.damageType.value)) then
         -- 触发免疫附魔事件
         data.damage = 0
-        event.trigger(data.targetUnit, EVENT.Unit.ImmuneEnchant, { sourceUnit = data.sourceUnit, enchantType = data.damageType })
+        event.trigger(data.targetUnit, event.type.unit.immuneEnchant, { sourceUnit = data.sourceUnit, enchantType = data.damageType })
     else
         data.damage = data.damage * (100 + percent) * 0.01
     end

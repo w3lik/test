@@ -8,8 +8,8 @@ TPL_ABILITY.ZZJY = AbilityTpl()
     :mpCostAdv(100, 0)
     :levelMax(10)
     :levelUpNeedPoint(2)
-    :onUnitEvent(EVENT.Unit.Hurt, function(hurtData) hurtData.triggerAbility:effective() end)
-    :onEvent(EVENT.Ability.Effective,
+    :onUnitEvent(event.type.unit.hurt, function(hurtData) hurtData.triggerAbility:effective() end)
+    :onEvent(event.type.ability.effective,
     function(effectiveData)
         -- 技能被触发的效果
         local tu = effectiveData.triggerUnit

@@ -1,4 +1,4 @@
-Game():onEvent(EVENT.Game.Start, "myCursor", function()
+Game():onEvent(event.type.game.start, "myCursor", function()
     
     -- 自定义选择圈
     J.EnableSelect(true, false)

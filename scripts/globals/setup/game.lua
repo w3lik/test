@@ -1,5 +1,5 @@
 -- 游戏信息
-Game():onEvent(EVENT.Game.Start, function()
+Game():onEvent(event.type.game.start, function()
 
     --- 中央顶部信息
     time.setInterval(1, function()

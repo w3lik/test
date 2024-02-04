@@ -22,11 +22,11 @@ local function _z(u, offset)
 end
 
 ---@param evtData noteOnUnitCritData
-event.registerReaction(EVENT.Unit.Crit, function(evtData)
+event.registerReaction(event.type.unit.crit, function(evtData)
     evtData.targetUnit:attach("lik_crit", "origin", 0.5)
 end)
 ---@param evtData noteOnUnitCritAbilityData
-event.registerReaction(EVENT.Unit.CritAbility, function(evtData)
+event.registerReaction(event.type.unit.critAbility, function(evtData)
     evtData.targetUnit:attach("lik_crit_ability", "origin", 0.5)
     mtg.model({
         model = "lik_ttg_crit",
@@ -40,11 +40,11 @@ event.registerReaction(EVENT.Unit.CritAbility, function(evtData)
     })
 end)
 ---@param evtData noteOnUnitAvoidData
-event.registerReaction(EVENT.Unit.Avoid, function(evtData)
+event.registerReaction(event.type.unit.avoid, function(evtData)
     evtData.triggerUnit:attach("lik_ttg_avoid", "overhead", 0.3)
 end)
 ---@param evtData noteOnUnitImmuneInvincibleData
-event.registerReaction(EVENT.Unit.ImmuneInvincible, function(evtData)
+event.registerReaction(event.type.unit.immuneInvincible, function(evtData)
     evtData.triggerUnit:attach("DivineShieldTarget", "origin", 1)
     mtg.model({
         model = "lik_ttg_immune_invincible",
@@ -57,7 +57,7 @@ event.registerReaction(EVENT.Unit.ImmuneInvincible, function(evtData)
     })
 end)
 ---@param evtData noteOnUnitImmuneDefendData
-event.registerReaction(EVENT.Unit.ImmuneDefend, function(evtData)
+event.registerReaction(event.type.unit.immuneDefend, function(evtData)
     mtg.model({
         model = "lik_ttg_immune_damage",
         size = 0.7,
@@ -69,7 +69,7 @@ event.registerReaction(EVENT.Unit.ImmuneDefend, function(evtData)
     })
 end)
 ---@param evtData noteOnUnitImmuneReductionData
-event.registerReaction(EVENT.Unit.ImmuneReduction, function(evtData)
+event.registerReaction(event.type.unit.immuneReduction, function(evtData)
     mtg.model({
         model = "lik_ttg_immune_damage",
         size = 0.7,
@@ -81,7 +81,7 @@ event.registerReaction(EVENT.Unit.ImmuneReduction, function(evtData)
     })
 end)
 ---@param evtData noteOnUnitImmuneEnchantData
-event.registerReaction(EVENT.Unit.ImmuneEnchant, function(evtData)
+event.registerReaction(event.type.unit.immuneEnchant, function(evtData)
     mtg.model({
         model = "lik_ttg_immune_enchant",
         size = 0.7,
@@ -93,35 +93,35 @@ event.registerReaction(EVENT.Unit.ImmuneEnchant, function(evtData)
     })
 end)
 ---@param evtData noteOnUnitHPSuckAttackData
-event.registerReaction(EVENT.Unit.HPSuckAttack, function(evtData)
+event.registerReaction(event.type.unit.hPSuckAttack, function(evtData)
     evtData.triggerUnit:attach("HealTarget2", "origin", 0.5)
 end)
 ---@param evtData noteOnUnitHPSuckAbilityData
-event.registerReaction(EVENT.Unit.HPSuckAbility, function(evtData)
+event.registerReaction(event.type.unit.hPSuckAbility, function(evtData)
     evtData.triggerUnit:attach("HealTarget2", "origin", 0.5)
 end)
 ---@param evtData noteOnUnitMPSuckAttackData
-event.registerReaction(EVENT.Unit.MPSuckAttack, function(evtData)
+event.registerReaction(event.type.unit.mPSuckAttack, function(evtData)
     evtData.triggerUnit:attach("AImaTarget", "origin", 0.5)
 end)
 ---@param evtData noteOnUnitMPSuckAbilityData
-event.registerReaction(EVENT.Unit.MPSuckAbility, function(evtData)
+event.registerReaction(event.type.unit.mPSuckAbility, function(evtData)
     evtData.triggerUnit:attach("AImaTarget", "origin", 0.5)
 end)
 ---@param evtData noteOnUnitBeStunData
-event.registerReaction(EVENT.Unit.Be.Stun, function(evtData)
+event.registerReaction(event.type.unit.be.stun, function(evtData)
     evtData.triggerUnit:attach("ThunderclapTarget", "overhead", evtData.duration)
 end)
 ---@param evtData noteOnUnitBeSplitData
-event.registerReaction(EVENT.Unit.Be.Split, function(evtData)
+event.registerReaction(event.type.unit.be.split, function(evtData)
     evtData.triggerUnit:effect("SpellBreakerAttack")
 end)
 ---@param evtData noteOnUnitBeSplitSpreadData
-event.registerReaction(EVENT.Unit.Be.SplitSpread, function(evtData)
+event.registerReaction(event.type.unit.be.splitSpread, function(evtData)
     evtData.triggerUnit:effect("CleaveDamageTarget")
 end)
 ---@param evtData noteOnUnitBeShieldData
-event.registerReaction(EVENT.Unit.Be.Shield, function(evtData)
+event.registerReaction(event.type.unit.be.shield, function(evtData)
     local u = evtData.triggerUnit
     mtg.word({
         style = "default",
@@ -136,7 +136,7 @@ event.registerReaction(EVENT.Unit.Be.Shield, function(evtData)
     })
 end)
 ---@param evtData noteOnUnitHurtData
-event.registerReaction(EVENT.Unit.Hurt, function(evtData)
+event.registerReaction(event.type.unit.hurt, function(evtData)
     local str = math.format(evtData.damage, 0)
     local height = -50
     if (evtData.crit == true) then
@@ -157,7 +157,7 @@ event.registerReaction(EVENT.Unit.Hurt, function(evtData)
     })
 end)
 ---@param evtData noteOnUnitEnchantData
-event.registerReaction(EVENT.Unit.Enchant, function(evtData)
+event.registerReaction(event.type.unit.enchant, function(evtData)
     local m = {
         [DAMAGE_TYPE.fire.value] = "lik_ttg_e_fire",
         [DAMAGE_TYPE.water.value] = "lik_ttg_e_water",

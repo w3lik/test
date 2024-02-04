@@ -6,7 +6,7 @@ TPL_ITEM.DEMO = ItemTpl()
     :ability(TPL_ABILITY.DEMO)
     :icon("ReplaceableTextures\\CommandButtons\\BTNArcaniteMelee.blp")
     :worth({ gold = 10 })
-    :onEvent(EVENT.Item.Get,
+    :onEvent(event.type.item.get,
     function(getData)
         echo(getData.triggerUnit:name() .. " 获得物品 " .. getData.triggerItem:name())
     end)

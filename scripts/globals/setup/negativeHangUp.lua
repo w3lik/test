@@ -2,7 +2,7 @@
 --- negative hang up
 if (false == DEBUGGING) then
 
-    Game():onEvent(EVENT.Game.Start, "negativeHangUp", function()
+    Game():onEvent(event.type.game.start, "negativeHangUp", function()
 
         sync.receive("negativeHangUp", function(syncData)
             local idx = tonumber(syncData.transferData[1])
