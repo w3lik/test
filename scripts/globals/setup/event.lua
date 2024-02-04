@@ -159,17 +159,17 @@ end)
 ---@param evtData noteOnUnitEnchantData
 event.registerReaction(event.type.unit.enchant, function(evtData)
     local m = {
-        [DAMAGE_TYPE.fire.value] = "lik_ttg_e_fire",
-        [DAMAGE_TYPE.water.value] = "lik_ttg_e_water",
-        [DAMAGE_TYPE.ice.value] = "lik_ttg_e_ice",
-        [DAMAGE_TYPE.rock.value] = "lik_ttg_e_rock",
-        [DAMAGE_TYPE.wind.value] = "lik_ttg_e_wind",
-        [DAMAGE_TYPE.light.value] = "lik_ttg_e_light",
-        [DAMAGE_TYPE.dark.value] = "lik_ttg_e_dark",
-        [DAMAGE_TYPE.grass.value] = "lik_ttg_e_grass",
-        [DAMAGE_TYPE.thunder.value] = "lik_ttg_e_thunder",
-        [DAMAGE_TYPE.poison.value] = "lik_ttg_e_poison",
-        [DAMAGE_TYPE.steel.value] = "lik_ttg_e_steel",
+        [injury.damageType.fire.value] = "lik_ttg_e_fire",
+        [injury.damageType.water.value] = "lik_ttg_e_water",
+        [injury.damageType.ice.value] = "lik_ttg_e_ice",
+        [injury.damageType.rock.value] = "lik_ttg_e_rock",
+        [injury.damageType.wind.value] = "lik_ttg_e_wind",
+        [injury.damageType.light.value] = "lik_ttg_e_light",
+        [injury.damageType.dark.value] = "lik_ttg_e_dark",
+        [injury.damageType.grass.value] = "lik_ttg_e_grass",
+        [injury.damageType.thunder.value] = "lik_ttg_e_thunder",
+        [injury.damageType.poison.value] = "lik_ttg_e_poison",
+        [injury.damageType.steel.value] = "lik_ttg_e_steel",
     }
     if (m[evtData.enchantType.value] ~= nil) then
         local u = evtData.triggerUnit

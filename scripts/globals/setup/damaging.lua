@@ -88,7 +88,7 @@ end)
 
 --- 自身暴击
 damageFlow:flux("crit", function(data)
-    local approve = (data.sourceUnit ~= nil and (data.damageSrc == DAMAGE_SRC.attack))
+    local approve = (data.sourceUnit ~= nil and (data.damageSrc == injury.damageSrc.attack))
     if (approve) then
         local crit = data.sourceUnit:crit()
         if (crit > 0) then
@@ -108,7 +108,7 @@ end)
 
 --- 回避
 damageFlow:flux("avoid", function(data)
-    local approve = (data.avoid > 0 and (data.damageSrc == DAMAGE_SRC.attack or data.damageSrc == DAMAGE_SRC.rebound))
+    local approve = (data.avoid > 0 and (data.damageSrc == injury.damageSrc.attack or data.damageSrc == injury.damageSrc.rebound))
     if (approve) then
         if (data.avoid > math.rand(1, 100)) then
             -- 触发回避事件
@@ -122,7 +122,7 @@ end)
 
 --- 自身攻击眩晕
 damageFlow:flux("stun", function(data)
-    local approve = (data.sourceUnit ~= nil and (data.damageSrc == DAMAGE_SRC.attack))
+    local approve = (data.sourceUnit ~= nil and (data.damageSrc == injury.damageSrc.attack))
     if (approve) then
         local stun = data.sourceUnit:stun()
         if (stun > 0) then
@@ -135,7 +135,7 @@ end)
 --- 反伤(%)
 damageFlow:flux("hurtRebound", function(data)
     -- 抵抗
-    local approve = (data.sourceUnit ~= nil and data.damageSrc == DAMAGE_SRC.rebound)
+    local approve = (data.sourceUnit ~= nil and data.damageSrc == injury.damageSrc.rebound)
     if (approve) then
         local resistance = data.sourceUnit:resistance("hurtRebound")
         if (resistance > 0) then
@@ -147,7 +147,7 @@ damageFlow:flux("hurtRebound", function(data)
         end
     end
     -- 反射
-    approve = (data.sourceUnit ~= nil and (data.damageSrc == DAMAGE_SRC.attack or data.damageSrc == DAMAGE_SRC.ability))
+    approve = (data.sourceUnit ~= nil and (data.damageSrc == injury.damageSrc.attack or data.damageSrc == injury.damageSrc.ability))
     if (approve) then
         local hurtRebound = data.targetUnit:hurtRebound()
         local odds = data.targetUnit:odds("hurtRebound")
@@ -160,12 +160,12 @@ damageFlow:flux("hurtRebound", function(data)
                         sourceUnit = data.targetUnit,
                         targetUnit = data.sourceUnit,
                         damage = dmgRebound,
-                        damageSrc = DAMAGE_SRC.rebound,
+                        damageSrc = injury.damageSrc.rebound,
                         damageType = data.damageType,
                         damageTypeLevel = 0,
                     })
                 end
-                if (data.damageSrc == DAMAGE_SRC.attack) then
+                if (data.damageSrc == injury.damageSrc.attack) then
                     -- 攻击情况
                     if (data.sourceUnit:isMelee()) then
                         damagedArrived()
@@ -175,7 +175,7 @@ damageFlow:flux("hurtRebound", function(data)
                         if (mode == "lightning") then
                             local lDur = 0.3
                             local lDelay = lDur * 0.6
-                            lightning(
+                            lightning.create(
                                 am:lightningType(),
                                 data.targetUnit:x(), data.targetUnit:y(), data.targetUnit:h(),
                                 data.sourceUnit:x(), data.sourceUnit:y(), data.sourceUnit:h(),
@@ -195,7 +195,7 @@ damageFlow:flux("hurtRebound", function(data)
                             })
                         end
                     end
-                elseif (data.damageSrc == DAMAGE_SRC.ability) then
+                elseif (data.damageSrc == injury.damageSrc.ability) then
                     -- 技能情况
                     damagedArrived()
                 end
@@ -235,7 +235,7 @@ end)
 
 --- 攻击吸血
 damageFlow:flux("hpSuckAttack", function(data)
-    local approve = (data.sourceUnit ~= nil and data.damageSrc == DAMAGE_SRC.attack)
+    local approve = (data.sourceUnit ~= nil and data.damageSrc == injury.damageSrc.attack)
     if (approve) then
         local percent = data.sourceUnit:hpSuckAttack() - data.targetUnit:resistance("hpSuckAttack")
         local val = data.damage * percent * 0.01
@@ -250,7 +250,7 @@ end)
 
 --- 技能吸血
 damageFlow:flux("hpSuckAbility", function(data)
-    local approve = (data.sourceUnit ~= nil and data.damageSrc == DAMAGE_SRC.ability)
+    local approve = (data.sourceUnit ~= nil and data.damageSrc == injury.damageSrc.ability)
     if (approve) then
         local percent = data.sourceUnit:hpSuckAbility() - data.targetUnit:resistance("hpSuckAbility")
         local val = data.damage * percent * 0.01
@@ -265,7 +265,7 @@ end)
 
 --- 攻击吸魔;吸魔会根据伤害，扣减目标的魔法值，再据百分比增加自己的魔法值;目标魔法值不足 1 从而吸收时，则无法吸取
 damageFlow:flux("mpSuckAttack", function(data)
-    local approve = (data.sourceUnit ~= nil and data.damageSrc == DAMAGE_SRC.attack and data.sourceUnit:mp() > 0 and data.targetUnit:mpCur() > 0)
+    local approve = (data.sourceUnit ~= nil and data.damageSrc == injury.damageSrc.attack and data.sourceUnit:mp() > 0 and data.targetUnit:mpCur() > 0)
     if (approve) then
         local percent = data.sourceUnit:mpSuckAttack() - data.targetUnit:resistance("mpSuckAttack")
         if (percent > 0) then
@@ -284,7 +284,7 @@ end)
 
 --- 技能吸魔;吸魔会根据伤害，扣减目标的魔法值，再据百分比增加自己的魔法值;目标魔法值不足 1 从而吸收时，则无法吸取
 damageFlow:flux("mpSuckAbility", function(data)
-    local approve = (data.sourceUnit ~= nil and data.damageSrc == DAMAGE_SRC.ability and data.sourceUnit:mp() > 0 and data.targetUnit:mpCur() > 0)
+    local approve = (data.sourceUnit ~= nil and data.damageSrc == injury.damageSrc.ability and data.sourceUnit:mp() > 0 and data.targetUnit:mpCur() > 0)
     if (approve) then
         local percent = data.sourceUnit:mpSuckAbility() - data.targetUnit:resistance("mpSuckAbility")
         if (percent > 0) then
@@ -321,9 +321,9 @@ damageFlow:flux("enchant", function(data)
     end
     --- 触发附魔事件
     event.trigger(data.targetUnit, event.type.unit.enchant, { sourceUnit = data.targetUnit, enchantType = data.damageType, percent = percent })
-    if (data.damageType ~= DAMAGE_TYPE.common) then
+    if (data.damageType ~= injury.damageType.common) then
         -- 一般设定攻击技能物品来源可触发附魔，禁止反应式伤害再触发
-        if (data.damageSrc == DAMAGE_SRC.attack or data.damageSrc == DAMAGE_SRC.ability or data.damageSrc == DAMAGE_SRC.item) then
+        if (data.damageSrc == injury.damageSrc.attack or data.damageSrc == injury.damageSrc.ability or data.damageSrc == injury.damageSrc.item) then
             enchant.append(data.targetUnit, data.damageType, data.damageTypeLevel, data.sourceUnit)
         end
     end

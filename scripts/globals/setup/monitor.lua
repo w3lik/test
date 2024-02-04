@@ -1,6 +1,6 @@
 --- 恢复生命监听器
 ---@param obj Unit
-monitor.build(
+monitor.create((
     "hp_regen",
     0.2,
     function(obj)
@@ -21,7 +21,7 @@ monitor.build(
 
 --- 恢复魔法监听器
 ---@param obj Unit
-monitor.build(
+monitor.create((
     "mp_regen",
     0.3,
     function(obj)

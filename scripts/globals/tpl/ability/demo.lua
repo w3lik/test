@@ -25,7 +25,7 @@ TPL_ABILITY.DEMO = AbilityTpl()
                         ---@param buffObj Unit
                         u:buff("剑之勇气" .. ak)
                          :name("剑之勇气")
-                         :signal(BUFF_SIGNAL.up)
+                         :signal(buff.signal.up)
                          :icon("ReplaceableTextures\\CommandButtons\\BTNArcaniteMelee.blp")
                          :text(colour.hex(colour.gold, n))
                          :description({

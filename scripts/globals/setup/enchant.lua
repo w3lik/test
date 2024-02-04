@@ -2,27 +2,27 @@
 ---@alias noteDamageTypeData {value:string,label:string}
 
 ---@type noteDamageTypeData
-DAMAGE_TYPE.fire = nil
+injury.damageType.fire = nil
 ---@type noteDamageTypeData
-DAMAGE_TYPE.rock = nil
+injury.damageType.rock = nil
 ---@type noteDamageTypeData
-DAMAGE_TYPE.water = nil
+injury.damageType.water = nil
 ---@type noteDamageTypeData
-DAMAGE_TYPE.ice = nil
+injury.damageType.ice = nil
 ---@type noteDamageTypeData
-DAMAGE_TYPE.wind = nil
+injury.damageType.wind = nil
 ---@type noteDamageTypeData
-DAMAGE_TYPE.light = nil
+injury.damageType.light = nil
 ---@type noteDamageTypeData
-DAMAGE_TYPE.dark = nil
+injury.damageType.dark = nil
 ---@type noteDamageTypeData
-DAMAGE_TYPE.grass = nil
+injury.damageType.grass = nil
 ---@type noteDamageTypeData
-DAMAGE_TYPE.thunder = nil
+injury.damageType.thunder = nil
 ---@type noteDamageTypeData
-DAMAGE_TYPE.poison = nil
+injury.damageType.poison = nil
 ---@type noteDamageTypeData
-DAMAGE_TYPE.steel = nil
+injury.damageType.steel = nil
 
 -- 附魔设定
 Enchant("fire"):name("火"):attachEffect("origin", "BreathOfFireDamage")
