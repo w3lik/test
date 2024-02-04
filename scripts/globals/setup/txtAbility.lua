@@ -11,7 +11,7 @@ Game():defineDescription("abilityBase", function(this, options)
         if (this:levelMax() > 1) then
             lvTxt = " - 等级 " .. colour.hex(colour.gold, lv)
         end
-        if (tt ~= ABILITY_TARGET_TYPE.pas) then
+        if (tt ~= ability.targetType.pas) then
             table.insert(desc, this:name() .. lvTxt .. "（" .. colour.hex(colour.gold, this:hotkey()) .. "）")
         else
             table.insert(desc, this:name() .. lvTxt)
@@ -23,14 +23,14 @@ Game():defineDescription("abilityBase", function(this, options)
     local chantCast = this:castChant(lv)
     if (chantCast > 0) then
         table.insert(desc, colour.hex(colour.lightskyblue, "吟唱时间: " .. chantCast .. " 秒"))
-    elseif (tt ~= ABILITY_TARGET_TYPE.pas) then
+    elseif (tt ~= ability.targetType.pas) then
         table.insert(desc, colour.hex(colour.lightskyblue, "吟唱时间: 瞬间施法"))
     end
     local keepCast = this:castKeep(lv)
     if (keepCast > 0) then
         table.insert(desc, colour.hex(colour.lightskyblue, "最大施法持续: " .. keepCast .. " 秒"))
     end
-    if (tt ~= ABILITY_TARGET_TYPE.tag_nil and tt ~= ABILITY_TARGET_TYPE.pas) then
+    if (tt ~= ability.targetType.none and tt ~= ability.targetType.pas) then
         table.insert(desc, colour.hex(colour.lightskyblue, "施法距离: " .. this:castDistance(lv)))
     end
     local castRadius = this:castRadius(lv)

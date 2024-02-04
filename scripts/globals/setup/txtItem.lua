@@ -6,7 +6,7 @@ Game():defineDescription("itemAbility", function(this)
     local lv = math.floor(this:level())
     local tt = this:targetType()
     table.insert(desc, colour.hex(colour.lightskyblue, "技能类型：" .. tt.label))
-    if (tt ~= ABILITY_TARGET_TYPE.pas) then
+    if (tt ~= ability.targetType.pas) then
         local chantCast = this:castChant(lv)
         if (chantCast > 0) then
             table.insert(desc, colour.hex(colour.lightskyblue, "吟唱时间：" .. chantCast .. " 秒"))
@@ -17,12 +17,12 @@ Game():defineDescription("itemAbility", function(this)
         if (keepCast > 0) then
             table.insert(desc, colour.hex(colour.lightskyblue, "施法持续：" .. keepCast .. " 秒"))
         end
-        if (tt ~= ABILITY_TARGET_TYPE.tag_nil) then
+        if (tt ~= ability.targetType.none) then
             table.insert(desc, colour.hex(colour.lightskyblue, "施法距离: " .. this:castDistance(lv)))
         end
-        if (tt == ABILITY_TARGET_TYPE.tag_circle) then
+        if (tt == ability.targetType.circle) then
             table.insert(desc, colour.hex(colour.lightskyblue, "圆形半径: " .. this:castRadius(lv)))
-        elseif (tt == ABILITY_TARGET_TYPE.tag_square) then
+        elseif (tt == ability.targetType.square) then
             local castWidth = this:castWidth(lv)
             local castHeight = this:castHeight(lv)
             table.insert(desc, colour.hex(colour.lightskyblue, "方形范围: " .. castWidth .. '*' .. castHeight))
@@ -58,7 +58,7 @@ Game():defineDescription("itemBase", function(this, options)
     if (isClass(ab, AbilityClass)) then
         local tt = ab:targetType()
         if (isClass(this, ItemClass)) then
-            if (tt ~= ABILITY_TARGET_TYPE.pas and this:hotkey() ~= nil) then
+            if (tt ~= ability.targetType.pas and this:hotkey() ~= nil) then
                 name = name .. "（" .. colour.hex(colour.gold, "数字" .. this:hotkey()) .. "）"
             end
             desc[1] = name

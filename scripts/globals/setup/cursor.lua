@@ -230,7 +230,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end
     })
     
-    cursor.setQuote(ABILITY_TARGET_TYPE.tag_nil, {
+    cursor.setQuote(ability.targetType.none, {
         start = function()
             local data = cursor.currentData()
             local ab = data.ability
@@ -243,7 +243,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
     })
     
-    cursor.setQuote(ABILITY_TARGET_TYPE.tag_unit, {
+    cursor.setQuote(ability.targetType.unit, {
         start = function()
             local data = cursor.currentData()
             local ab = data.ability
@@ -349,7 +349,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
     })
     
-    cursor.setQuote(ABILITY_TARGET_TYPE.tag_loc, {
+    cursor.setQuote(ability.targetType.loc, {
         start = function()
             local data = cursor.currentData()
             local ab = data.ability
@@ -415,7 +415,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
     })
     
-    cursor.setQuote(ABILITY_TARGET_TYPE.tag_circle, {
+    cursor.setQuote(ability.targetType.circle, {
         start = function()
             local data = cursor.currentData()
             local ab = data.ability
@@ -567,7 +567,7 @@ Game():onEvent(EVENT.Game.Start, "myCursor", function()
         end,
     })
     
-    cursor.setQuote(ABILITY_TARGET_TYPE.tag_square, {
+    cursor.setQuote(ability.targetType.square, {
         start = function()
             local data = cursor.currentData()
             local ab = data.ability

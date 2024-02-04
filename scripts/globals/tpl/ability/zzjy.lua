@@ -2,7 +2,7 @@
 ---@param effectiveData noteOnAbilityEffectiveData
 TPL_ABILITY.ZZJY = AbilityTpl()
     :name("自在极意被动")
-    :targetType(ABILITY_TARGET_TYPE.pas)
+    :targetType(ability.targetType.pas)
     :icon("black")
     :coolDownAdv(10, 0)
     :mpCostAdv(100, 0)

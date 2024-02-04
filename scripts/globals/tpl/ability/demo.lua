@@ -6,7 +6,7 @@ TPL_ABILITY.DEMO = AbilityTpl()
         "越战越勇，每减少10%的HP则会增加10点攻击力",
         "效果最多叠加9层，最大90点攻击力",
     })
-    :targetType(ABILITY_TARGET_TYPE.pas)
+    :targetType(ability.targetType.pas)
     :icon("ReplaceableTextures\\CommandButtons\\BTNArcaniteMelee.blp")
     :onEvent(EVENT.Ability.Get,
     function(abData)
