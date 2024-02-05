@@ -78,11 +78,11 @@ for _, k in ipairs(enchant.keys) do
     buff.conf(k, name, ei[k])
     buff.conf(SYMBOL_E .. k, nil, ei[k])
 end
-for _, v in ipairs(ATTR_ODDS) do
+for _, v in ipairs(attribute.oddsKeys) do
     local k = string.replace(v, SYMBOL_E, '')
     buff.conf(SYMBOL_ODD .. v, nil, buff.icon(k))
 end
-for _, v in ipairs(ATTR_RESISTANCE) do
+for _, v in ipairs(attribute.resistanceKeys) do
     local k = string.replace(v, SYMBOL_E, '')
     buff.conf(SYMBOL_RES .. v, nil, buff.icon(k))
 end

@@ -60,11 +60,11 @@ for _, k in ipairs(enchant.keys) do
     attribute.conf(SYMBOL_E .. k .. "Append", attribute.label(k) .. "附着")
     attribute.conf(SYMBOL_EI .. k, attribute.label(k) .. "免疫")
 end
-for _, v in ipairs(ATTR_ODDS) do
+for _, v in ipairs(attribute.oddsKeys) do
     local k = string.replace(v, SYMBOL_E, '')
     attribute.conf(SYMBOL_ODD .. v, attribute.label(k) .. '几率', '%')
 end
-for _, v in ipairs(ATTR_RESISTANCE) do
+for _, v in ipairs(attribute.resistanceKeys) do
     local k = string.replace(v, SYMBOL_E, '')
     attribute.conf(SYMBOL_RES .. v, attribute.label(k) .. '抗性', '%')
 end
