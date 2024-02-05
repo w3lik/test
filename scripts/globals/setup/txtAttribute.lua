@@ -52,7 +52,7 @@ attribute.conf("cost", "施法消耗", nil, true)
 attribute.conf("costPercent", "施法消耗", '%', true)
 attribute.conf("sp", "额外特性")
 --
-for _, k in ipairs(ENCHANT_TYPES) do
+for _, k in ipairs(enchant.keys) do
     local name = Enchant(k):name()
     attribute.conf(k, name)
     attribute.conf(SYMBOL_E .. k, attribute.label(k) .. "强化", '%')

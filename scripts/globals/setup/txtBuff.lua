@@ -73,7 +73,7 @@ local ei = {
     water = "ability/DeathknightFrozencenter",
     wind = "ability/Greenengulfingtornado",
 }
-for _, k in ipairs(ENCHANT_TYPES) do
+for _, k in ipairs(enchant.keys) do
     local name = Enchant(k):name()
     buff.conf(k, name, ei[k])
     buff.conf(SYMBOL_E .. k, nil, ei[k])
