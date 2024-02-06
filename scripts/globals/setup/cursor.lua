@@ -141,7 +141,7 @@ Game():onEvent(event.type.game.start, "myCursor", function()
     ---@param ab Ability
     ---@return boolean
     local abilityStart = function(ab)
-        if (isClass(_timer1, TimerClass)) then
+        if (isMeta(_timer1, TimerMeta)) then
             destroy(_timer1)
             _timer1 = nil
         end

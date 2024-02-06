@@ -1,9 +1,9 @@
 --- 挂机灭绝器
 --- negative hang up
 if (false == DEBUGGING) then
-
+    
     Game():onEvent(event.type.game.start, "negativeHangUp", function()
-
+        
         sync.receive("negativeHangUp", function(syncData)
             local idx = tonumber(syncData.transferData[1])
             Player(idx):quit("消极挂机")
@@ -30,10 +30,10 @@ if (false == DEBUGGING) then
                 end
                 cx, cy = cx2, cy2
                 click = false
-                curTimer:period("+=10")
+                curTimer:setPeriod(period + 10)
             end)
         end)
-
+    
     end)
 
 end
