@@ -4,7 +4,7 @@ Game():onEvent(event.type.game.start, "myCursor", function()
     J.EnableSelect(true, false)
     local sel = Image("ReplaceableTextures\\Selection\\SelectionCircleLarge.blp", 72, 72)
     sel:show(false)
-    japi.Refresh("mySelection", function()
+    japi.Refresh(1, function()
         if (false == japi.IsWindowActive()) then
             return
         end
@@ -146,13 +146,13 @@ Game():onEvent(event.type.game.start, "myCursor", function()
             _timer1 = nil
         end
         J.EnableSelect(false, false)
-        time.setTimeout(0, function()
+        async.setTimeout(1, function()
             J.SelectUnit(selection:handle(), true)
         end)
         return abilityCheck(ab)
     end
     local abilityOver = function()
-        _timer1 = time.setTimeout(1, function()
+        _timer1 = async.setTimeout(60, function()
             J.EnableSelect(true, false)
         end)
     end
