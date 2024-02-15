@@ -9,7 +9,7 @@ process:onStart(function(this)
     
     local bubble = this:bubble()
     bubble.eff = Effect("Echo", 0, 0, 0, -1)
-    bubble.eff:rotateZ(270)
+    bubble.eff:setRotateZ(270)
     bubble.unit = Unit(TPL_UNIT.DEMO, Player(1), 0, -100, 270)
     bubble.unit2 = Unit(TPL_UNIT.DEMO2, Player(2), 0, -100, 270)
 
