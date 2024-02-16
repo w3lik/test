@@ -52,7 +52,7 @@ Game():onEvent(event.type.game.start, "myCursor", function()
                 end
             end
             FrameTooltips(0)
-                :relation(FRAME_ALIGN_BOTTOM, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, tx, ty)
+                :relation(FRAME_ALIGN_BOTTOM, UI_Game, FRAME_ALIGN_LEFT_BOTTOM, tx, ty)
                 :content({ tips = table.concat(tips, '|n') })
                 :show(true)
         else
@@ -61,8 +61,8 @@ Game():onEvent(event.type.game.start, "myCursor", function()
     end)
     
     -- 指针配置
-    local csFollow = FrameBackdrop("myFollow", FrameGameUI):show(false) -- 跟踪比指针底层所以先定义
-    local csPointer = FrameBackdrop("myPointer", FrameGameUI):adaptive(true):size(0.01, 0.01)
+    local csFollow = FrameBackdrop("myFollow", UI_Game):show(false) -- 跟踪比指针底层所以先定义
+    local csPointer = FrameBackdrop("myPointer", UI_Game):adaptive(true):size(0.01, 0.01)
     local csArea = Image("Framework\\ui\\nil.tga", 16, 16)
     csArea:show(false)
     -- 区域贴图尺寸变化量，方形时以高为1做比例替换，小于等于0即瞬间变化完成
@@ -226,7 +226,7 @@ Game():onEvent(event.type.game.start, "myCursor", function()
             csPointer:texture(texture)
             csPointer:alpha(alpha + cn)
             csPointer:size(width, height)
-            csPointer:relation(align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, drx, ry)
+            csPointer:relation(align, UI_Game, FRAME_ALIGN_LEFT_BOTTOM, drx, ry)
         end
     })
     
@@ -330,7 +330,7 @@ Game():onEvent(event.type.game.start, "myCursor", function()
             csPointer:texture(texture)
             csPointer:alpha(alpha)
             csPointer:size(width, height)
-            csPointer:relation(align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
+            csPointer:relation(align, UI_Game, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
         end,
         ---@param evtData noteOnMouseEventMoveData
         leftClick = function(evtData)
@@ -393,7 +393,7 @@ Game():onEvent(event.type.game.start, "myCursor", function()
             csPointer:texture(texture)
             csPointer:alpha(alpha)
             csPointer:size(width, height)
-            csPointer:relation(align, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
+            csPointer:relation(align, UI_Game, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
         end,
         ---@param evtData noteOnMouseEventClickData
         leftClick = function(evtData)
@@ -745,7 +745,7 @@ Game():onEvent(event.type.game.start, "myCursor", function()
             local data = cursor.currentData()
             local rx, ry = evtData.rx, evtData.ry
             local drx = japi.FrameDisAdaptive(rx)
-            csPointer:relation(FRAME_ALIGN_CENTER, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, drx, ry)
+            csPointer:relation(FRAME_ALIGN_CENTER, UI_Game, FRAME_ALIGN_LEFT_BOTTOM, drx, ry)
             ---@type FrameDrag
             local frame = data.frame
             local a = frame:anchor()
@@ -758,7 +758,7 @@ Game():onEvent(event.type.game.start, "myCursor", function()
             y = math.min(y, 0.6 - a[4] / 2 - pad[1])
             local h = frame:handle()
             japi.FrameClearAllPoints(h)
-            japi.FrameSetPoint(h, FRAME_ALIGN_CENTER, FrameGameUI:handle(), FRAME_ALIGN_LEFT_BOTTOM, x, y)
+            japi.FrameSetPoint(h, FRAME_ALIGN_CENTER, UI_Game:handle(), FRAME_ALIGN_LEFT_BOTTOM, x, y)
             frame:setReleasePoint(x, y)
         end,
     })
@@ -780,7 +780,7 @@ Game():onEvent(event.type.game.start, "myCursor", function()
             local rx, ry = japi.MouseRX(), japi.MouseRY()
             csFollow:texture(texture)
                     :size(size[1], size[2])
-                    :relation(FRAME_ALIGN_CENTER, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
+                    :relation(FRAME_ALIGN_CENTER, UI_Game, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
                     :alpha(150)
                     :show(true)
             
@@ -838,7 +838,7 @@ Game():onEvent(event.type.game.start, "myCursor", function()
                     ry = 0.6 - hh
                 end
             end
-            csFollow:relation(FRAME_ALIGN_CENTER, FrameGameUI, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
+            csFollow:relation(FRAME_ALIGN_CENTER, UI_Game, FRAME_ALIGN_LEFT_BOTTOM, rx, ry)
         end,
         ---@param evtData noteOnMouseEventClickData
         rightClick = function(evtData)
